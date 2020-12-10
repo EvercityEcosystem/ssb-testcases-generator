@@ -1,0 +1,21 @@
+{
+  "name": "evercity-json",
+  "version": "1.0.0",
+  "description": "evercity rpc test suite",
+  "main": "index.js",
+  "scripts": {
+    "scenario1": "node index.js scenario1",
+    "scenario2": "node index.js scenario2"
+  },
+  "keywords": [
+    "evercity-substrate",
+    "rpc"
+  ],
+  "author": "ddulesov",
+  "license": "Apache-2.0",
+  "type": "module",
+  "dependencies": {
+    "@polkadot/api": "^2.9.1",
+    "dotenv": "^8.2.0"
+  }
+}
