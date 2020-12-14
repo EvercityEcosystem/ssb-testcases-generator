@@ -220,7 +220,7 @@ async function connect(ws_url) {
     });
 
     o.unsub = unsub;
-    o.day_duration = api.consts.evercity.dayDuration.toNumber();
+    o.day_duration = api.consts.evercity.timeStep.toNumber();
     o.master = keyring.addFromUri('//Alice', {
         name: 'Alice (master)'
     });

@@ -74,7 +74,7 @@ function get_bond(day, price) {
         "docs_pack_root_hash_tech": [0],
 
         "impact_data_type": "POWER_GENERATED",
-        "impact_data_baseline": 10000,
+        "impact_data_baseline": [4000,5000,5000,6000,6000,6000,6000,6000,6000,7000,8000,8000] ,
         "impact_data_max_deviation_cap": 16000,
         "impact_data_max_deviation_floor": 4000,
         "impact_data_send_period": day,
