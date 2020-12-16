@@ -1,9 +1,7 @@
 {
-    "Address": "AccountId",
-    "LookupSource": "AccountId",
-    "EverUSDBalance": "u64",
-    "Moment": "u64",
-    "BondId": "[u8;8]",
+  "EverUSDBalance": "u64",
+  "Moment": "u64",
+  "BondId": "[u8;8]",
   "EvercityAccountStructOf": {
     "roles": "u8",
     "identity": "u64",

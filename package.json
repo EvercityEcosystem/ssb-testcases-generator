@@ -4,8 +4,8 @@
   "description": "evercity rpc test suite",
   "main": "index.js",
   "scripts": {
-    "scenario1": "node index.js scenario1",
-    "scenario2": "node index.js scenario2"
+    "scenario1": "node --experimental-json-modules index.js scenario1",
+    "scenario2": "node --experimental-json-modules index.js scenario2"
   },
   "keywords": [
     "evercity-substrate",
@@ -15,7 +15,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@polkadot/api": "^2.9.1",
+    "@polkadot/api": "^3.0.2-3",
     "dotenv": "^8.2.0"
   }
 }

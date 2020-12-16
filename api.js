@@ -6,7 +6,7 @@ import {
 import {
     Keyring
 } from '@polkadot/api';
-import dotenv  from 'dotenv';
+import dotenv from 'dotenv';
 import {
     readFileSync
 } from 'fs';
@@ -21,7 +21,7 @@ const keyring = new Keyring({
 
 class NodeConnection {
     callback = [];
-	nonce = 1;
+    nonce = 1;
     constructor(api) {
         this.api = api;
     }
@@ -55,6 +55,9 @@ class NodeConnection {
         this.callback = [];
         this.api = null;
     }
+    async transfer(addr, amount) {
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master);
+    }
 
     async create_account(addr, role, amount) {
         await this.api.tx.evercity.accountAddWithRoleAndData(addr, role, 0).signAndSend(this.master, {
@@ -62,7 +65,7 @@ class NodeConnection {
         });
         await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
             nonce: -1
-        });		
+        });
     }
 
     async request_everusd(account, amount) {
@@ -239,31 +242,5 @@ async function connect(ws_url) {
 
     return o;
 }
-
-
-/*
-await api.rpc.chain.subscribeNewHeads((lastHeader) => {
-  console.log(`${chain}: last block #${lastHeader.number} has hash ${lastHeader.hash}  was authored by ${lastHeader.author}`);
-});
-api.query.system.events((events) => {
-	console.log(`\nReceived ${events.length} events:`);
-
-	// Loop through the Vec<EventRecord>
-	events.forEach((record) => {
-	  // Extract the phase, event and the event types
-	  const { event, phase } = record;
-	  const types = event.typeDef;
-
-	  // Show what we are busy with
-	  console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
-	  console.log(`\t\t${event.meta.documentation.toString()}`);
-
-	  // Loop through each of the parameters, displaying the type and data
-	  event.data.forEach((data, index) => {
-		console.log(`\t\t\t${types[index].type}: ${data.toString()}`);
-	  });
-	});
-});
-*/
 
 export default connect
