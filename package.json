@@ -4,6 +4,9 @@
   "description": "evercity rpc test suite",
   "main": "index.js",
   "scripts": {
+    "init": "node --experimental-json-modules index.js init",
+    "status": "node  --experimental-json-modules index.js status",
+    "example": "node  --experimental-json-modules index.js ./example_module.js",
     "scenario1": "node --experimental-json-modules index.js scenario1",
     "scenario2": "node --experimental-json-modules index.js scenario2"
   },

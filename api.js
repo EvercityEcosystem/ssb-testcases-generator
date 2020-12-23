@@ -1,9 +1,7 @@
 // Import
 import {
     ApiPromise,
-    WsProvider
-} from '@polkadot/api';
-import {
+    WsProvider,
     Keyring
 } from '@polkadot/api';
 import dotenv from 'dotenv';
@@ -59,6 +57,25 @@ class NodeConnection {
         await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master);
     }
 
+    async init() {
+        await this.api.tx.evercity.setMaster().signAndSend(this.master);
+    }
+
+    async unit_balance(addr) {
+        const account = await this.api.query.system.account(addr);
+        return account.data.free
+        //console.log( JSON.stringify(account, null, 2) )
+    }
+
+    async bond_units(bondid, addr) {
+        return await this.api.query.evercity.bondUnitPackageRegistry(bondid, addr)
+    }
+
+    async bond_unit_lots(bondid, addr) {
+        return await this.api.query.evercity.bondUnitPackageLot(bondid, addr)
+    }
+
+
     async create_account(addr, role, amount) {
         await this.api.tx.evercity.accountAddWithRoleAndData(addr, role, 0).signAndSend(this.master, {
             nonce: -1
@@ -83,8 +100,8 @@ class NodeConnection {
         });
     }
 
-    async account_balance(account) {
-        const balance = await this.api.query.evercity.balanceEverUSD(account);
+    async account_balance(addr) {
+        const balance = await this.api.query.evercity.balanceEverUSD(addr);
         return balance.toNumber();
     }
 
@@ -156,6 +173,19 @@ class NodeConnection {
         }
     }
 
+    async buy_lot(investor1, investor2, moment, bondid, count, cost, private_lot) {
+        const lot = this.api.createType('BondUnitSaleLotStructOf', {
+            deadline: moment,
+            new_bondholder: (typeof(private_lot) === 'undefined' || !private_lot) ? null : investor2.address,
+            bond_units: count,
+            amount: cost
+        });
+
+        await this.api.tx.evercity.bondUnitLotSettle(bondid, investor1.address, lot).signAndSend(investor2, {
+            nonce: -1
+        });
+    }
+
     async deposit(issuer, bondid, amount) {
         const tbondid = this.api.createType('BondId', bondid);
         await this.api.tx.evercity.bondDepositEverusd(tbondid, amount).signAndSend(issuer, {
@@ -192,7 +222,6 @@ class NodeConnection {
     }
 }
 
-
 async function connect(ws_url) {
     const ws = process.env.ws_url || "ws://localhost:9944";
     const wsProvider = new WsProvider(ws);
@@ -203,6 +232,7 @@ async function connect(ws_url) {
     });
 
     let o = new NodeConnection(api);
+    console.log(`connected to ${ws}`);
 
     const unsub = await api.query.timestamp.now((now) => {
         const moment = now.toNumber();

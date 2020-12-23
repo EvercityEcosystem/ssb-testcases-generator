@@ -1,12 +1,15 @@
-import connect from './api.js';
 import {
-    Keyring
-} from '@polkadot/api';
-const keyring = new Keyring({
-    type: 'sr25519'
-});
-
-let api = await connect();
+    api,
+    master,
+    custodian,
+    auditor,
+    manager,
+    issuer,
+    investor1,
+    investor2,
+    investor3,
+    superissuer
+} from './init.js'
 
 const BLOCK_INTERVAL = 20000;
 // everusd to account balance translation 
@@ -18,7 +21,7 @@ const BOND3 = "ECBD103";
 const BOND4 = "ECBD104";
 const BOND5 = "ECBD105";
 // scenario2 bond
-const BOND10 = "ECBDSC2";
+const BOND10 = "ECBDSC8";
 
 // account roles
 const MASTER_ROLE = 1;
@@ -27,34 +30,6 @@ const ISSUER_ROLE = 4;
 const INVESTOR_ROLE = 8;
 const AUDITOR_ROLE = 16;
 const MANAGER_ROLE = 32;
-
-const master = keyring.addFromUri('gallery suffer express depend kite math rich exclude vanish minor risk auction', {
-    name: 'MASTER (master)'
-});
-const custodian = keyring.addFromUri('feature wagon lunar ready topic turkey video firm minute quote critic card', {
-    name: 'custodian'
-});
-const auditor = keyring.addFromUri('border system idle nut era skate course attract good scrub cricket load', {
-    name: 'auditor'
-});
-const manager = keyring.addFromUri('hole planet enjoy kingdom jealous north tell economy cream kiwi person arrive', {
-    name: 'manager'
-});
-const issuer = keyring.addFromUri('where annual glory source ten universe attitude reflect quantum usage snap detect', {
-    name: 'issuer'
-});
-const investor1 = keyring.addFromUri('someone gold unit daughter stairs antenna crazy scorpion total rhythm dish arm', {
-    name: 'investor1'
-});
-const investor2 = keyring.addFromUri('near country below huge eagle salmon solar twelve aim admit glove hospital', {
-    name: 'investor2'
-});
-const investor3 = keyring.addFromUri('crack unhappy mistake absurd funny desk draft awful sport winner clerk force', {
-    name: 'investor3'
-});
-const superissuer = keyring.addFromUri('//SuperIssuer', {
-    name: 'issuer+investor'
-});
 
 const accounts = [
     master,
@@ -104,7 +79,7 @@ function get_bond(day, price) {
 async function scenario1() {
     let now = await api.now();
     await api.wait_until(0);
-    const everusd = 1000;
+    const everusd = 2000;
 
     await api.mint(investor1, custodian, everusd * UNIT);
     await api.mint(investor2, custodian, everusd * UNIT);
@@ -145,6 +120,7 @@ async function scenario1() {
     await api.buy_bond_units(investor3, BOND4, 100);
     console.log(`${investor3.meta.name} bought 100 bond units`);
 
+
     // GIVE BACK SOME BOND UNITS
     await api.wait_until(0);
     await api.give_back_bond_units(investor3, BOND4, 100);
@@ -170,12 +146,17 @@ async function scenario1() {
 
     await api.wait_until(0);
     await api.transfer_ownership(investor2, null, now + 100 * BLOCK_INTERVAL, BOND3, 50, 600 * UNIT);
-    console.log(`${investor2.meta.name} bid 600 bond units`);
+    await api.transfer_ownership(investor2, null, now + 100 * BLOCK_INTERVAL, BOND3, 50, 600 * UNIT);
+
+    console.log(`${investor2.meta.name} bid 2 x 50 bond units`);
+    await api.wait_until(0);
+    await api.buy_lot(investor2, investor3, now + 100 * BLOCK_INTERVAL, BOND3, 50, 600 * UNIT);
+    console.log(`${investor3.meta.name} bought 50 bond units`);
+
 }
 
-
 async function scenario2() {
-    let now = await api.now();
+
     const everusd = 1000;
     // MINT EVERUSD
     await api.mint(investor1, custodian, everusd * UNIT);
@@ -186,16 +167,20 @@ async function scenario2() {
     const initialBalance = await api.account_balance(issuer.address);
     console.log(`initial ${issuer.meta.name} balance is ${initialBalance}`);
 
-    // RELEAS BOND
+    // RELEASE BOND
+    let now = await api.now();
     const bond = get_bond(api.day_duration, 10);
 
     await api.prepare_bond(issuer, BOND10, bond);
     console.log(`'${BOND10}' has been prepared `);
     await api.wait_until(0);
 
+
     await api.release_bond(api.master, BOND10);
     console.log(`'${BOND10}' has been released `);
     await api.wait_until(0);
+
+    let bond_in_chain = await api.get_bond(BOND10);
 
     await api.buy_bond_units(investor1, BOND10, 10);
     await api.buy_bond_units(investor2, BOND10, 50);
@@ -210,7 +195,8 @@ async function scenario2() {
     console.log(`'${BOND10}' has been activated `);
     await api.wait_until(0);
 
-    let bond_in_chain = await api.get_bond(BOND10);
+    bond_in_chain = await api.get_bond(BOND10);
+    //console.log( JSON.stringify(bond_in_chain, null, 2) );
 
     const bond_activation_time = bond_in_chain.active_start_date.toNumber();
     console.log(`bond activated at ${bond_activation_time}`);
@@ -237,8 +223,8 @@ async function scenario2() {
         await api.withdraw_everusd(investor1, BOND10);
     }
 
-    await api.mint(issuer, custodian, 4 * UNIT);
-    console.log(`${issuer.meta.name} get extra 4 everusd for pay off principal value`);
+    await api.mint(issuer, custodian, 40 * UNIT);
+    console.log(`${issuer.meta.name} get extra 40 everusd for pay off principal value`);
     await api.wait_until(bond_activation_time + api.day_duration * 15);
     await api.bond_redeem(issuer, BOND10);
     console.log(`redeem bond '${BOND10}'`);
@@ -249,30 +235,64 @@ async function scenario2() {
     await api.withdraw_everusd(investor3, BOND10);
 
     console.log(`withdraw bond '${BOND10}' by all investors`);
+    bond_in_chain = await api.get_bond(BOND10);
+    console.log(JSON.stringify(bond_in_chain, null, 2));
+
     await api.wait_until(0);
 }
 
+async function status() {
+
+    for (const inv of [investor1, investor2, investor3]) {
+        const balance = await api.account_balance(inv.address);
+        console.log(`Balance: ${inv.meta.name} => ${balance} everusd`);
+    }
+
+    for (const bondid of [BOND1, BOND2, BOND3, BOND4, BOND5]) {
+        for (const inv of [investor1, investor2, investor3]) {
+
+            const data = await api.bond_units(bondid, inv.address);
+            if (data.length == 0) {
+                continue;
+
+            }
+
+            console.log(`Bond: ${bondid} ${inv.meta.name} => ${data}`);
+            const lots = await api.bond_unit_lots(bondid, inv.address);
+            console.log(`Lot:  ${bondid} ${inv.meta.name} => ${lots}`);
+        }
+    };
+}
+
 async function main() {
-    console.log("create accounts");
 
-    const basetokens = 6000000000;
-    const now = await api.now();
+    let balance = await api.unit_balance(api.master.address);
+    console.log(`master balance is ${balance} UNITS`);
 
-    await api.create_account(master.address, MASTER_ROLE, basetokens);
-    await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens);
-    await api.create_account(auditor.address, AUDITOR_ROLE, basetokens);
-    await api.create_account(manager.address, MANAGER_ROLE, basetokens);
-    await api.create_account(issuer.address, ISSUER_ROLE, basetokens);
-    await api.create_account(investor1.address, INVESTOR_ROLE, basetokens);
-    await api.create_account(investor2.address, INVESTOR_ROLE, basetokens);
-    await api.create_account(investor3.address, INVESTOR_ROLE, basetokens);
-    await api.create_account(superissuer.address, INVESTOR_ROLE + ISSUER_ROLE, basetokens);
-
-    console.log("accounts created");
 
     var args = process.argv.slice(2);
 
     switch (args[0]) {
+        case 'init':
+            await api.init();
+            const basetokens = 60000000000000;
+
+            await api.create_account(master.address, MASTER_ROLE, basetokens);
+            await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens);
+            await api.create_account(auditor.address, AUDITOR_ROLE, basetokens);
+            await api.create_account(manager.address, MANAGER_ROLE, basetokens);
+            await api.create_account(issuer.address, ISSUER_ROLE, basetokens);
+            await api.create_account(investor1.address, INVESTOR_ROLE, basetokens);
+            await api.create_account(investor2.address, INVESTOR_ROLE, basetokens);
+            await api.create_account(investor3.address, INVESTOR_ROLE, basetokens);
+            await api.create_account(superissuer.address, INVESTOR_ROLE + ISSUER_ROLE, basetokens);
+            const now = await api.now();
+            console.log(`accounts created at ${now}`);
+
+            break;
+        case 'status':
+            await status();
+            break;
         case 'scenario1':
             await scenario1.apply(api, args.slice(1));
             break;
@@ -280,11 +300,16 @@ async function main() {
             await scenario2.apply(api, args.slice(1));
             break;
         default:
-            console.log('account created');
-            break
+            let {
+                default: run
+            } = await import(args[0]);
+
+            await run();
+            break;
     }
+
     console.log("stopping...");
     api.stop_callback()
-    console.log("end of script");
+
 }
 main().catch(console.error).finally(() => process.exit());

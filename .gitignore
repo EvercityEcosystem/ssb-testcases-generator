@@ -1,4 +1,6 @@
 node_modules
 package-lock.json
 .env
+.local
 yarn.lock
+**.ex.js
