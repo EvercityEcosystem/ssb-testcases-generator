@@ -209,7 +209,7 @@ async function scenario2() {
 
     for (let i = 0; i < 14; i++) {
         // deposit everusd to bond fund for pay off coupon yield
-        await api.deposit(issuer, BOND10, 5000000);
+        await api.deposit(issuer, BOND10, 1000000000);
         // report period
 
         await api.report_send(issuer, BOND10, i, 4000 + i * 1000);

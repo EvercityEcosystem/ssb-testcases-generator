@@ -209,9 +209,22 @@ class NodeConnection {
 
     async withdraw_everusd(account, bondid) {
         const tbondid = this.api.createType('BondId', bondid);
-        await this.api.tx.evercity.bondWithdrawEverusd(tbondid).signAndSend(account, {
-            nonce: -1
-        });
+        await this.api.tx.evercity.bondWithdrawEverusd(tbondid).signAndSend(
+            account,
+            {
+                nonce: -1
+            },
+            (submittableResult) => {
+                if (submittableResult.status.isFinalized) {
+                    const result = submittableResult.toHuman();
+                    const events = result.events.map(e => `${e.event.section}.${e.event.method}`);
+
+                    if (!events.includes('evercity.BondWithdrawEverUSD')) {
+                        console.error('evercity.BondWithdrawEverUSD', ' not in [', events.join(';'), ']');
+                    }
+                }
+            }
+        );
     }
 
     async bond_redeem(issuer, bondid) {
