@@ -1,2 +1,2 @@
-ws_url="ws://51.15.47.43:9940"
-types="./types.json"
+ws_url="ws://51.15.47.43:9942"
+types="types_ipci.json"

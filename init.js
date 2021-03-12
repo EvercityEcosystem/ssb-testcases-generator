@@ -8,6 +8,7 @@ const keyring = new Keyring({
     type: 'sr25519'
 });
 
+//replace with keyring.addFromUri("//Alice") if use with IPCI chain
 export const master = keyring.addFromUri('gallery suffer express depend kite math rich exclude vanish minor risk auction', {
     name: 'MASTER (master)'
 });

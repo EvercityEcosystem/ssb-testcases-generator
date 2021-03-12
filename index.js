@@ -11,7 +11,7 @@ import {
     superissuer
 } from './init.js'
 
-const BLOCK_INTERVAL = 20000;
+const BLOCK_INTERVAL = 6000;
 // everusd to account balance translation 
 const UNIT = 1000000000;
 // scenario1 bonds
