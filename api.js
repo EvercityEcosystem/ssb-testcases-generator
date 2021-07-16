@@ -241,7 +241,7 @@ async function connect(ws_url) {
 
     const api = await ApiPromise.create({
         provider: wsProvider,
-        types: JSON.parse(readFileSync(process.env.types || "./types.json", 'utf8'))
+        types: JSON.parse(readFileSync(process.env.types || "./types_ipci.json", 'utf8'))
     });
 
     let o = new NodeConnection(api);

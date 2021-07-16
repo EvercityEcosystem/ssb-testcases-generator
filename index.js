@@ -76,6 +76,35 @@ function get_bond(day, price) {
     }
 }
 
+function get_stable_bond(price) {
+    return {
+        "docs_pack_root_hash_main": [0],
+        "docs_pack_root_hash_legal": [0],
+        "docs_pack_root_hash_finance": [0],
+        "docs_pack_root_hash_tech": [0],
+
+        "impact_data_type": "POWER_GENERATED",
+        "impact_data_baseline": [null, null, null, null, null, null, null, null, null, null, null, null],
+        "impact_data_max_deviation_cap": null,
+        "impact_data_max_deviation_floor": null,
+        "impact_data_send_period": 0,
+        "interest_rate_penalty_for_missed_report": null,
+        "interest_rate_base_value": 3000,
+        "interest_rate_margin_cap": null,
+        "interest_rate_margin_floor": null,
+        "interest_rate_start_period_value": null,
+        "interest_pay_period": null,
+        "start_period": null,
+        "payment_period": null,
+        "bond_duration": 12,
+        "bond_finishing_period": 100 * day,
+        "mincap_deadline": 0,
+        "bond_units_mincap_amount": 100,
+        "bond_units_maxcap_amount": 600,
+        "bond_units_base_price": price * UNIT
+    }
+}
+
 async function scenario1() {
     let now = await api.now();
     await api.wait_until(0);
@@ -239,6 +268,10 @@ async function scenario2() {
     console.log(JSON.stringify(bond_in_chain, null, 2));
 
     await api.wait_until(0);
+}
+
+async function scenario3() {
+
 }
 
 async function status() {
