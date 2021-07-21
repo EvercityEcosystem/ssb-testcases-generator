@@ -190,7 +190,7 @@ async function scenario2() {
 }
 
 async function scenario3() {
-    const bond = get_stable_bond(api.day_duration, 3);
+    const bond = get_stable_bond(api.day_duration, 10);
     await bond_flow(bond);
 }
 
