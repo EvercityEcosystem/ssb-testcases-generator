@@ -59,7 +59,7 @@
      "interest_rate_start_period_value": "Option<BondInterest>",
      "interest_pay_period": "Option<BondPeriod>",
      "start_period": "Option<BondPeriod>",
-     "payment_period": "Option<BondPeriod>",
+     "payment_period": "BondPeriod",
      "bond_duration": "Compact<BondPeriodNumber>",
      "bond_finishing_period": "Compact<BondPeriod>",
      "mincap_deadline": "Compact<Moment>",
