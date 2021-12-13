@@ -233,6 +233,30 @@ class NodeConnection {
             nonce: -1
         });
     }
+
+    // FileSign:
+    async filesign_create_file(issuer, tag, filehash, file_id) {
+        const ttag = this.api.createType('Vec<u8>', tag);
+        const tfilehash = this.api.createType('H256', filehash);
+        const tfile_id = this.api.createType('Option<FileId>', file_id);
+        await this.api.tx.evercityFilesign.createNewFile(ttag, tfilehash, tfile_id).signAndSend(issuer);
+
+        // await this.api.tx.evercity.bondRedeem(tbondid).signAndSend(issuer, {
+        //     nonce: -1
+        // });
+    }
+
+    // Accounts
+
+    // Carbon Credits
+    async cc_create_project(issuer, file_id) {
+        const tbondid = this.api.createType('BondId', bondid);
+        // await this.api.tx.evercity.bondRedeem(tbondid).signAndSend(issuer, {
+        //     nonce: -1
+        // });
+    }
+
+
 }
 
 async function connect(ws_url) {

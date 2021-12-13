@@ -31,6 +31,11 @@ const INVESTOR_ROLE = 8;
 const AUDITOR_ROLE = 16;
 const MANAGER_ROLE = 32;
 
+// Filesign const
+const TAG = "my tag";
+const FILEHASH = "01234567890123456";
+const FILE_ID = "01234567890123456";
+
 const accounts = [
     master,
     custodian,
@@ -301,6 +306,16 @@ async function status() {
     };
 }
 
+
+async function carbon_credits_scenario1() {
+    // const bond = get_bond(api.day_duration, 10);
+    // await bond_flow(bond);
+    // await api.mint(investor1, custodian, everusd * UNIT);
+
+
+    await api.filesign_create_file(auditor, TAG, FILEHASH, FILE_ID);
+}
+
 async function main() {
 
     let balance = await api.unit_balance(api.master.address);
@@ -338,6 +353,9 @@ async function main() {
             break;
         case 'scenario3':
             await scenario3.apply(api, args.slice(1));
+            break;
+        case 'carbon_credits_scenario1':
+            await carbon_credits_scenario1.apply(api, args.slice(1));
             break;
         default:
             let {
