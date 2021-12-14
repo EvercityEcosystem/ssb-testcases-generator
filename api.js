@@ -299,6 +299,14 @@ class NodeConnection {
     async cc_sign_last_report(acc, project_id) {
         await this.api.tx.evercityCarbonCredits.signLastAnnualReport(project_id).signAndSend(acc);
     }
+
+    async cc_release_carbon_credits(owner, project_id, asset_id, new_carbon_credits_holder, min_balance){
+        const tasset_id = this.api.createType('AssetId', asset_id);
+        const tnew_carbon_credits_holder = this.api.createType('AccountId', new_carbon_credits_holder);
+        const tmin_balance = this.api.createType('Balance', min_balance);
+
+        await this.api.tx.evercityCarbonCredits.releaseCarbonCredits(project_id, tasset_id, tnew_carbon_credits_holder, tmin_balance).signAndSend(owner);
+    }
 }
 
 async function connect(ws_url) {

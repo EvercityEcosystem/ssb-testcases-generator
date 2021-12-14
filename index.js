@@ -57,6 +57,7 @@ const CREDITS_COUNT = 666;
 const CC_NAME = "TEST Carbon Credit";
 const CC_TAG= "TCC";
 const DECIMALS = 0;
+const CC_ASSET_ID = 1;
 
 const GOLD_STANDARD = "GOLD_STANDARD";
 
@@ -392,6 +393,8 @@ async function carbon_credits_scenario1() {
     await api.wait_until(0);
 
     // Release Carbon credits
+    await api.cc_release_carbon_credits(cc_project_owner, 1, CC_ASSET_ID, cc_project_owner.address, 1);
+    await api.wait_until(0);
 
     // Transfer Carbon credits
 
