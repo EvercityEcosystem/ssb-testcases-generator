@@ -49,6 +49,15 @@ const CC_REGISTRY_ROLE = 4096;
 const PDD_TAG = "PDD TAG";
 const PDD_FILEHASH = "0101010101010101";
 const PDD_FILE_ID = "01234567890123456";
+
+const REPORT_TAG = "REPORT TAG";
+const REPORT_FILEHASH = "1231231231231236";
+const REPORT_FILE_ID = "111111111111111111";
+const CREDITS_COUNT = 666;
+const CC_NAME = "TEST Carbon Credit";
+const CC_TAG= "TCC";
+const DECIMALS = 0;
+
 const GOLD_STANDARD = "GOLD_STANDARD";
 
 const accounts = [
@@ -359,7 +368,9 @@ async function carbon_credits_scenario1() {
     await api.wait_until(0);
 
     // Add report
-
+    await api.cc_create_report_with_file(cc_project_owner, 1, REPORT_FILE_ID, REPORT_FILEHASH, REPORT_TAG, CREDITS_COUNT, CC_NAME, CC_TAG, DECIMALS);
+    await api.wait_until(0);
+    
     // Add report signers
 
     // Sign report

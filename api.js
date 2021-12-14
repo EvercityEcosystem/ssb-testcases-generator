@@ -273,8 +273,22 @@ class NodeConnection {
         await this.api.tx.evercityCarbonCredits.assignProjectSigner(tsigner, role, project_id).signAndSend(owner);
     }
 
-    async cc_sign_project(owner, project_id) {
-        await this.api.tx.evercityCarbonCredits.signProject(project_id).signAndSend(owner);
+    async cc_sign_project(acc, project_id) {
+        await this.api.tx.evercityCarbonCredits.signProject(project_id).signAndSend(acc);
+    }
+
+    async cc_create_report_with_file(owner, project_id, file_id, filehash, tag, carbon_credits_count, asset_name, asset_symbol, asset_decimals) {
+        const tfile_id = this.api.createType('FileId', file_id);
+        const tfilehash = this.api.createType('H256', filehash);
+        const ttag = this.api.createType('Vec<u8>', tag);
+        const tcarbon_credits_count = this.api.createType('Balance', carbon_credits_count);
+        const tasset_name = this.api.createType('Vec<u8>', asset_name);
+        const tasset_symbol = this.api.createType('Vec<u8>', asset_symbol);
+        const tasset_decimals = this.api.createType('u8', asset_decimals);
+
+
+        await this.api.tx.evercityCarbonCredits.createAnnualReportWithFile(project_id, tfile_id, tfilehash, 
+                        ttag, tcarbon_credits_count, tasset_name, tasset_symbol, tasset_decimals).signAndSend(owner);
     }
 }
 
