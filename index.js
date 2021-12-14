@@ -368,21 +368,21 @@ async function carbon_credits_scenario1() {
     // Project Owner submits PDD (changing status to Registration) => 
     // => Auditor Approves PDD => Standard Certifies PDD => Registry Registers PDD (changing status to Issuance)
     await api.cc_sign_project(cc_project_owner, 1);
-    console.log(`${cc_project_owner.address} signed the project with id 1`);
+    console.log(`owner ${cc_project_owner.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_auditor, 1);
-    console.log(`${cc_auditor.address} signed the project with id 1`);
+    console.log(`auditor ${cc_auditor.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_standard, 1);
-    console.log(`${cc_standard.address} signed the project with id 1`);
+    console.log(`standard ${cc_standard.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_registry, 1);
-    console.log(`${cc_registry.address} signed the project with id 1`);
+    console.log(`registry ${cc_registry.address} signed the project with id 1`);
     await api.wait_until(0);
 
     // Add report
     await api.cc_create_report_with_file(cc_project_owner, 1, REPORT_FILE_ID, REPORT_FILEHASH, REPORT_TAG, CREDITS_COUNT, CC_NAME, CC_TAG, DECIMALS);
-    console.log(`${cc_project_owner.address} created first annual report in project 1`);
+    console.log(`${cc_project_owner.address} created first annual report in project 1 holding ${CREDITS_COUNT} carbon credits`);
     await api.wait_until(0);
 
     // Add report signers
@@ -403,22 +403,24 @@ async function carbon_credits_scenario1() {
     // Project Owner sends report for verification =>  Auditor provides and submits verification report => 
     // Standard Approves carbon credit issuance => Registry issues carbon credits
     await api.cc_sign_last_report(cc_project_owner, 1);
-    console.log(`${cc_project_owner.address} signed the project 1 last annual report`);
+    console.log(`owner ${cc_project_owner.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_auditor, 1);
-    console.log(`${cc_auditor.address} signed the project 1 last annual report`);
+    console.log(`auditor ${cc_auditor.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_standard, 1);
-    console.log(`${cc_standard.address} signed the project 1 last annual report`);
+    console.log(`standard ${cc_standard.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_registry, 1);
-    console.log(`${cc_registry.address} signed the project 1 last annual report`);
+    console.log(`registry ${cc_registry.address} signed the project 1 last annual report`);
     await api.wait_until(0);
 
     // Release Carbon credits and burn some
     await api.cc_release_carbon_credits(cc_project_owner, 1, CC_ASSET_ID, cc_project_owner.address, 1);
     console.log(`${cc_project_owner.address} released project 1 last annual report carbon credits`);
     await api.wait_until(0);
+    let owner_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_project_owner.address);
+    console.log(`${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
     await api.burn_carbon_credits(cc_project_owner, CC_ASSET_ID, 50);
     console.log(`${cc_project_owner.address} burned 50 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
@@ -427,11 +429,20 @@ async function carbon_credits_scenario1() {
     await api.transfer_carbon_credits(cc_project_owner, CC_ASSET_ID, cc_investor.address, 50);
     console.log(`${cc_project_owner.address} transfered 50 asset ${CC_ASSET_ID} carbon credits to ${cc_investor.address}`);
     await api.wait_until(0);
+    let investor_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_investor.address);
+    console.log(`${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
 
     // Burn Carbon credits
     await api.burn_carbon_credits(cc_investor, CC_ASSET_ID, 30);
     console.log(`${cc_investor.address} burned 30 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
+
+    owner_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_project_owner.address);
+    investor_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_investor.address);
+
+    console.log(`${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
+    console.log(`${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
+
     console.log(`Scenario1 has been completed successfully!`);
 }
 
