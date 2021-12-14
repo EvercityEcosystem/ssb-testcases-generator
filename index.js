@@ -370,10 +370,26 @@ async function carbon_credits_scenario1() {
     // Add report
     await api.cc_create_report_with_file(cc_project_owner, 1, REPORT_FILE_ID, REPORT_FILEHASH, REPORT_TAG, CREDITS_COUNT, CC_NAME, CC_TAG, DECIMALS);
     await api.wait_until(0);
-    
+
     // Add report signers
+    await api.cc_assign_report_signer(cc_project_owner, cc_project_owner.address, CC_PROJECT_OWNER_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_report_signer(cc_project_owner, cc_auditor.address, CC_AUDITOR_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_report_signer(cc_project_owner, cc_standard.address, CC_STANDARD_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_report_signer(cc_project_owner, cc_registry.address, CC_REGISTRY_ROLE, 1);
+    await api.wait_until(0);
 
     // Sign report
+    await api.cc_sign_last_report(cc_project_owner, 1);
+    await api.wait_until(0);
+    await api.cc_sign_last_report(cc_auditor, 1);
+    await api.wait_until(0);
+    await api.cc_sign_last_report(cc_standard, 1);
+    await api.wait_until(0);
+    await api.cc_sign_last_report(cc_registry, 1);
+    await api.wait_until(0);
 
     // Release Carbon credits
 

@@ -290,6 +290,15 @@ class NodeConnection {
         await this.api.tx.evercityCarbonCredits.createAnnualReportWithFile(project_id, tfile_id, tfilehash, 
                         ttag, tcarbon_credits_count, tasset_name, tasset_symbol, tasset_decimals).signAndSend(owner);
     }
+
+    async cc_assign_report_signer(owner, signer, role, project_id) {
+        const tsigner = this.api.createType('AccountId', signer);
+        await this.api.tx.evercityCarbonCredits.assignLastAnnualReportSigner(tsigner, role, project_id).signAndSend(owner);
+    }
+
+    async cc_sign_last_report(acc, project_id) {
+        await this.api.tx.evercityCarbonCredits.signLastAnnualReport(project_id).signAndSend(acc);
+    }
 }
 
 async function connect(ws_url) {
