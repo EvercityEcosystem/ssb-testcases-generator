@@ -348,7 +348,15 @@ async function carbon_credits_scenario1() {
     await api.cc_assign_project_signer(cc_project_owner, cc_registry.address, CC_REGISTRY_ROLE, 1);
     await api.wait_until(0);
 
-    // sign by gold standard
+    // sign by gold standard order
+    await api.cc_sign_project(cc_project_owner, 1);
+    await api.wait_until(0);
+    await api.cc_sign_project(cc_auditor, 1);
+    await api.wait_until(0);
+    await api.cc_sign_project(cc_standard, 1);
+    await api.wait_until(0);
+    await api.cc_sign_project(cc_registry, 1);
+    await api.wait_until(0);
 
     // Add report
 

@@ -272,6 +272,10 @@ class NodeConnection {
         const tsigner = this.api.createType('AccountId', signer);
         await this.api.tx.evercityCarbonCredits.assignProjectSigner(tsigner, role, project_id).signAndSend(owner);
     }
+
+    async cc_sign_project(owner, project_id) {
+        await this.api.tx.evercityCarbonCredits.signProject(project_id).signAndSend(owner);
+    }
 }
 
 async function connect(ws_url) {
