@@ -397,6 +397,8 @@ async function carbon_credits_scenario1() {
     await api.wait_until(0);
 
     // Transfer Carbon credits
+    await api.transfer_carbon_credits(cc_project_owner, CC_ASSET_ID, cc_investor.address, 50);
+    await api.wait_until(0);
 
     // Burn Carbon credits
 }
