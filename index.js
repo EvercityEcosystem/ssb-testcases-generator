@@ -53,7 +53,7 @@ const PDD_FILE_ID = "01234567890123456";
 const REPORT_TAG = "REPORT TAG";
 const REPORT_FILEHASH = "1231231231231236";
 const REPORT_FILE_ID = "111111111111111111";
-const CREDITS_COUNT = 666;
+const CREDITS_COUNT = 1100;
 const CC_NAME = "TEST Carbon Credit";
 const CC_TAG= "TCC";
 const DECIMALS = 0;
@@ -392,8 +392,10 @@ async function carbon_credits_scenario1() {
     await api.cc_sign_last_report(cc_registry, 1);
     await api.wait_until(0);
 
-    // Release Carbon credits
+    // Release Carbon credits and burn some
     await api.cc_release_carbon_credits(cc_project_owner, 1, CC_ASSET_ID, cc_project_owner.address, 1);
+    await api.wait_until(0);
+    await api.burn_carbon_credits(cc_project_owner, CC_ASSET_ID, 50);
     await api.wait_until(0);
 
     // Transfer Carbon credits
@@ -401,6 +403,8 @@ async function carbon_credits_scenario1() {
     await api.wait_until(0);
 
     // Burn Carbon credits
+    await api.burn_carbon_credits(cc_investor, CC_ASSET_ID, 30);
+    await api.wait_until(0);
 }
 
 async function main() {

@@ -315,6 +315,13 @@ class NodeConnection {
 
         await this.api.tx.evercityCarbonCredits.transferCarbonCredits(tasset_id, tnew_holder, tamount).signAndSend(holder);
     }
+
+    async burn_carbon_credits(holder, asset_id, amount) {
+        const tasset_id = this.api.createType('AssetId', asset_id);
+        const tamount = this.api.createType('Balance', amount);
+
+        await this.api.tx.evercityCarbonCredits.burnCarbonCredits(tasset_id, tamount).signAndSend(holder);
+    }
 }
 
 async function connect(ws_url) {
