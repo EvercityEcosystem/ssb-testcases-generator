@@ -322,6 +322,11 @@ class NodeConnection {
 
         await this.api.tx.evercityCarbonCredits.burnCarbonCredits(tasset_id, tamount).signAndSend(holder);
     }
+
+    async get_user_asset(bondid) {
+        const tbondid = this.api.createType('BondId', bondid);
+        return await this.api.query.evercity.bondRegistry(tbondid);
+    }
 }
 
 async function connect(ws_url) {

@@ -337,74 +337,102 @@ async function status() {
     };
 }
 
-/// GOLD STANDARD
+/// MAIN FLOW OF GOLD STANDARD
 async function carbon_credits_scenario1() {
     // Create file
     await api.filesign_create_file(cc_project_owner, PDD_TAG, PDD_FILEHASH, PDD_FILE_ID);
+    console.log(`${cc_project_owner.address} created file with id ${PDD_FILE_ID}`);
     await api.wait_until(0);
 
     // Create project:
     // Id will be = 1
     await api.cc_create_project(cc_project_owner, GOLD_STANDARD, PDD_FILE_ID);
+    console.log(`${cc_project_owner.address} created ${GOLD_STANDARD} project 1`);
     await api.wait_until(0);
 
     // Add signers
     await api.cc_assign_project_signer(cc_project_owner, cc_project_owner.address, CC_PROJECT_OWNER_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_project_owner.address} as CC_PROJECT_OWNER_ROLE to project 1 signers`);
     await api.wait_until(0);
     await api.cc_assign_project_signer(cc_project_owner, cc_auditor.address, CC_AUDITOR_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_auditor.address} as CC_AUDITOR_ROLE to project 1 signers`);
     await api.wait_until(0);
     await api.cc_assign_project_signer(cc_project_owner, cc_standard.address, CC_STANDARD_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_standard.address} as CC_STANDARD_ROLE to project 1 signers`);
     await api.wait_until(0);
     await api.cc_assign_project_signer(cc_project_owner, cc_registry.address, CC_REGISTRY_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_registry.address} as CC_REGISTRY_ROLE to project 1 signers`);
     await api.wait_until(0);
 
     // sign by gold standard order
+    // Project Owner submits PDD (changing status to Registration) => 
+    // => Auditor Approves PDD => Standard Certifies PDD => Registry Registers PDD (changing status to Issuance)
     await api.cc_sign_project(cc_project_owner, 1);
+    console.log(`${cc_project_owner.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_auditor, 1);
+    console.log(`${cc_auditor.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_standard, 1);
+    console.log(`${cc_standard.address} signed the project with id 1`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_registry, 1);
+    console.log(`${cc_registry.address} signed the project with id 1`);
     await api.wait_until(0);
 
     // Add report
     await api.cc_create_report_with_file(cc_project_owner, 1, REPORT_FILE_ID, REPORT_FILEHASH, REPORT_TAG, CREDITS_COUNT, CC_NAME, CC_TAG, DECIMALS);
+    console.log(`${cc_project_owner.address} created first annual report in project 1`);
     await api.wait_until(0);
 
     // Add report signers
     await api.cc_assign_report_signer(cc_project_owner, cc_project_owner.address, CC_PROJECT_OWNER_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_project_owner.address} as CC_PROJECT_OWNER_ROLE to project 1 report signers`);
     await api.wait_until(0);
     await api.cc_assign_report_signer(cc_project_owner, cc_auditor.address, CC_AUDITOR_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_auditor.address} as CC_AUDITOR_ROLE to project 1 report signers`);
     await api.wait_until(0);
     await api.cc_assign_report_signer(cc_project_owner, cc_standard.address, CC_STANDARD_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_standard.address} as CC_STANDARD_ROLE to project 1 report signers`);
     await api.wait_until(0);
     await api.cc_assign_report_signer(cc_project_owner, cc_registry.address, CC_REGISTRY_ROLE, 1);
+    console.log(`${cc_project_owner.address} added ${cc_registry.address} as CC_REGISTRY_ROLE to project 1 report signers`);
     await api.wait_until(0);
 
     // Sign report
+    // Project Owner sends report for verification =>  Auditor provides and submits verification report => 
+    // Standard Approves carbon credit issuance => Registry issues carbon credits
     await api.cc_sign_last_report(cc_project_owner, 1);
+    console.log(`${cc_project_owner.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_auditor, 1);
+    console.log(`${cc_auditor.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_standard, 1);
+    console.log(`${cc_standard.address} signed the project 1 last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_registry, 1);
+    console.log(`${cc_registry.address} signed the project 1 last annual report`);
     await api.wait_until(0);
 
     // Release Carbon credits and burn some
     await api.cc_release_carbon_credits(cc_project_owner, 1, CC_ASSET_ID, cc_project_owner.address, 1);
+    console.log(`${cc_project_owner.address} released project 1 last annual report carbon credits`);
     await api.wait_until(0);
     await api.burn_carbon_credits(cc_project_owner, CC_ASSET_ID, 50);
+    console.log(`${cc_project_owner.address} burned 50 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
 
     // Transfer Carbon credits
     await api.transfer_carbon_credits(cc_project_owner, CC_ASSET_ID, cc_investor.address, 50);
+    console.log(`${cc_project_owner.address} transfered 50 asset ${CC_ASSET_ID} carbon credits to ${cc_investor.address}`);
     await api.wait_until(0);
 
     // Burn Carbon credits
     await api.burn_carbon_credits(cc_investor, CC_ASSET_ID, 30);
+    console.log(`${cc_investor.address} burned 30 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
+    console.log(`Scenario1 has been completed successfully!`);
 }
 
 async function main() {
