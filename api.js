@@ -235,18 +235,14 @@ class NodeConnection {
     }
 
     // FileSign:
-    async filesign_create_file(issuer, tag, filehash, file_id) {
+    async filesign_create_file(owner, tag, filehash, file_id) {
         const ttag = this.api.createType('Vec<u8>', tag);
         const tfilehash = this.api.createType('H256', filehash);
         const tfile_id = this.api.createType('Option<FileId>', file_id);
-        await this.api.tx.evercityFilesign.createNewFile(ttag, tfilehash, tfile_id).signAndSend(issuer);
-
-        // await this.api.tx.evercity.bondRedeem(tbondid).signAndSend(issuer, {
-        //     nonce: -1
-        // });
+        await this.api.tx.evercityFilesign.createNewFile(ttag, tfilehash, tfile_id).signAndSend(owner);
     }
 
-    // Accounts
+    // Accounts:
     async create_pa_account(addr, role, amount) {
         await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role).signAndSend(this.master, {
             nonce: -1
@@ -265,15 +261,17 @@ class NodeConnection {
         });
     }
 
-    // Carbon Credits
-    async cc_create_project(issuer, file_id) {
-        const tbondid = this.api.createType('BondId', bondid);
-        // await this.api.tx.evercity.bondRedeem(tbondid).signAndSend(issuer, {
-        //     nonce: -1
-        // });
+    // Carbon Credits: 
+    async cc_create_project(owner, standard, file_id) {
+        const tstandard = this.api.createType('Standard', standard);
+        const tfile_id = this.api.createType('Option<FileId>', file_id);
+        await this.api.tx.evercityCarbonCredits.createProject(tstandard, tfile_id).signAndSend(owner);
     }
 
-
+    async cc_assign_project_signer(owner, signer, role, project_id) {
+        const tsigner = this.api.createType('AccountId', signer);
+        await this.api.tx.evercityCarbonCredits.assignProjectSigner(tsigner, role, project_id).signAndSend(owner);
+    }
 }
 
 async function connect(ws_url) {

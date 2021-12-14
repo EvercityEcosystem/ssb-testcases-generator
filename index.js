@@ -46,9 +46,10 @@ const CC_INVESTOR_ROLE = 2048;
 const CC_REGISTRY_ROLE = 4096;
 
 // Filesign const
-const TAG = "my tag";
-const FILEHASH = "01234567890123456";
-const FILE_ID = "01234567890123456";
+const PDD_TAG = "PDD TAG";
+const PDD_FILEHASH = "0101010101010101";
+const PDD_FILE_ID = "01234567890123456";
+const GOLD_STANDARD = "GOLD_STANDARD";
 
 const accounts = [
     master,
@@ -326,14 +327,40 @@ async function status() {
     };
 }
 
-
+/// GOLD STANDARD
 async function carbon_credits_scenario1() {
-    // const bond = get_bond(api.day_duration, 10);
-    // await bond_flow(bond);
-    // await api.mint(investor1, custodian, everusd * UNIT);
+    // Create file
+    await api.filesign_create_file(cc_project_owner, PDD_TAG, PDD_FILEHASH, PDD_FILE_ID);
+    await api.wait_until(0);
 
+    // Create project:
+    // Id will be = 1
+    await api.cc_create_project(cc_project_owner, GOLD_STANDARD, PDD_FILE_ID);
+    await api.wait_until(0);
 
-    await api.filesign_create_file(auditor, TAG, FILEHASH, FILE_ID);
+    // Add signers
+    await api.cc_assign_project_signer(cc_project_owner, cc_project_owner.address, CC_PROJECT_OWNER_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_project_signer(cc_project_owner, cc_auditor.address, CC_AUDITOR_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_project_signer(cc_project_owner, cc_standard.address, CC_STANDARD_ROLE, 1);
+    await api.wait_until(0);
+    await api.cc_assign_project_signer(cc_project_owner, cc_registry.address, CC_REGISTRY_ROLE, 1);
+    await api.wait_until(0);
+
+    // sign by gold standard
+
+    // Add report
+
+    // Add report signers
+
+    // Sign report
+
+    // Release Carbon credits
+
+    // Transfer Carbon credits
+
+    // Burn Carbon credits
 }
 
 async function main() {
