@@ -469,17 +469,24 @@ async function main() {
             await api.create_account(investor3.address, INVESTOR_ROLE, basetokens);
             await api.create_account(superissuer.address, INVESTOR_ROLE + ISSUER_ROLE, basetokens);
 
-            // create pallet-evercity-accounts accounts:
-            await api.set_pa_master(accounts_master.address, basetokens);
-            await api.create_pa_account(cc_project_owner.address, CC_PROJECT_OWNER_ROLE, basetokens);
-            await api.create_pa_account(cc_auditor.address, CC_AUDITOR_ROLE, basetokens);
-            await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens);
-            await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens);
-            await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens);
-
-
             const now = await api.now();
             console.log(`accounts created at ${now}`);
+
+            break;
+        case 'init_cc':
+            await api.init();
+            const basetokens_cc = 60000000000000;
+
+            // create pallet-evercity-accounts accounts:
+            await api.set_pa_master(accounts_master.address, basetokens_cc);
+            await api.create_pa_account(cc_project_owner.address, CC_PROJECT_OWNER_ROLE, basetokens_cc);
+            await api.create_pa_account(cc_auditor.address, CC_AUDITOR_ROLE, basetokens_cc);
+            await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens_cc);
+            await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens_cc);
+            await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens_cc);
+
+            const now_cc = await api.now();
+            console.log(`accounts for carbon credits created at ${now_cc}`);
 
             break;
         case 'status':
