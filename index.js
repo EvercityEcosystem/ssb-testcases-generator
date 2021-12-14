@@ -8,7 +8,13 @@ import {
     investor1,
     investor2,
     investor3,
-    superissuer
+    superissuer,
+    accounts_master,
+    cc_project_owner,
+    cc_auditor,
+    cc_standard,
+    cc_registry,
+    cc_investor
 } from './init.js'
 
 const BLOCK_INTERVAL = 6000;
@@ -31,6 +37,14 @@ const INVESTOR_ROLE = 8;
 const AUDITOR_ROLE = 16;
 const MANAGER_ROLE = 32;
 
+// pallet accounts roles
+
+const CC_PROJECT_OWNER_ROLE = 256;
+const CC_AUDITOR_ROLE = 512;
+const CC_STANDARD_ROLE = 1024;
+const CC_INVESTOR_ROLE = 2048;
+const CC_REGISTRY_ROLE = 4096;
+
 // Filesign const
 const TAG = "my tag";
 const FILEHASH = "01234567890123456";
@@ -45,7 +59,13 @@ const accounts = [
     investor1,
     investor2,
     investor3,
-    superissuer
+    superissuer,
+    accounts_master,
+    cc_project_owner,
+    cc_auditor,
+    cc_standard,
+    cc_registry,
+    cc_investor
 ];
 
 for (let account of accounts) {
@@ -338,6 +358,16 @@ async function main() {
             await api.create_account(investor2.address, INVESTOR_ROLE, basetokens);
             await api.create_account(investor3.address, INVESTOR_ROLE, basetokens);
             await api.create_account(superissuer.address, INVESTOR_ROLE + ISSUER_ROLE, basetokens);
+
+            // create pallet-evercity-accounts accounts:
+            await api.set_pa_master(accounts_master.address, basetokens);
+            await api.create_pa_account(cc_project_owner.address, CC_PROJECT_OWNER_ROLE, basetokens);
+            await api.create_pa_account(cc_auditor.address, CC_AUDITOR_ROLE, basetokens);
+            await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens);
+            await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens);
+            await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens);
+
+
             const now = await api.now();
             console.log(`accounts created at ${now}`);
 

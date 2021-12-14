@@ -247,6 +247,23 @@ class NodeConnection {
     }
 
     // Accounts
+    async create_pa_account(addr, role, amount) {
+        await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role).signAndSend(this.master, {
+            nonce: -1
+        });
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
+            nonce: -1
+        });
+    }
+
+    async set_pa_master(addr, amount) {
+        await this.api.tx.evercityAccounts.setMaster(addr).signAndSend(this.master, {
+            nonce: -1
+        });
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
+            nonce: -1
+        });
+    }
 
     // Carbon Credits
     async cc_create_project(issuer, file_id) {

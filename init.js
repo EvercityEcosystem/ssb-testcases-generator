@@ -36,3 +36,22 @@ export const investor3 = keyring.addFromUri('crack unhappy mistake absurd funny 
 export const superissuer = keyring.addFromUri('//SuperIssuer', {
     name: 'issuer+investor'
 });
+// Carbon credits:
+export const accounts_master = keyring.addFromUri('globe position noodle charge team yellow tip method hole culture concert tongue', {
+    name: 'ACCOUNTS_MASTER (accounts_master)'
+});
+export const cc_project_owner = keyring.addFromUri('draw math page shield discover faith fee install drip recipe dove glance', {
+    name: 'cc_project_owner'
+});
+export const cc_auditor = keyring.addFromUri('supreme toast fabric poem since above oblige then gesture improve suffer song', {
+    name: 'cc_auditor'
+});
+export const cc_standard = keyring.addFromUri('patient electric trouble visa wire spoon tank open cannon bright pear glare', {
+    name: 'сс_standard'
+});
+export const cc_registry = keyring.addFromUri('also strategy rapid public special viable drip slogan same own shrimp wrong', {
+    name: 'cc_registry'
+});
+export const cc_investor = keyring.addFromUri('genre tennis warrior zone argue debate float diary material sense paddle luxury', {
+    name: 'cc_investor'
+});
