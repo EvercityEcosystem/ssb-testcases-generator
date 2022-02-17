@@ -168,7 +168,7 @@ function get_bond_carbon_credits_included(day, price) {
         "bond_units_maxcap_amount": 600,
         "bond_units_base_price": price * UNIT,
         "carbon_metadata": {
-            "count": 100_000
+            "count": 1000
         }
     }
 }
@@ -265,10 +265,11 @@ async function scenario3() {
 }
 
 async function scenario4() {
-    await api.mint(investor1, custodian, everusd * UNIT);
-    await api.mint(investor2, custodian, everusd * UNIT);
-    await api.mint(investor3, custodian, everusd * UNIT);
     const bond1 = get_bond_carbon_credits_included(api.day_duration, 10);
+    let crabon_units_metadata = api.create_carbon_metadata_type({
+        "count": 1000
+    });
+    bond1.carbon_metadata = crabon_units_metadata;
     console.log(bond1);
     await bond_flow(bond1);
 
@@ -316,6 +317,7 @@ async function bond_flow(bond) {
     await api.wait_until(0);
 
     let bond_in_chain = await api.get_bond(BOND10);
+    console.log(JSON.stringify(bond_in_chain, null, 2));
 
     await api.buy_bond_units(investor1, BOND10, 10);
     await api.buy_bond_units(investor2, BOND10, 50);

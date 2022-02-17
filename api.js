@@ -338,6 +338,10 @@ class NodeConnection {
 
         return await this.api.tx.evercityCarbonBridge.releaseBondCarbonCredits(tasset_id, tamount, tbond_id).signAndSend(issuer);
     }
+
+    create_carbon_metadata_type(obj) {
+        return this.api.createType('CarbonUnitsMetadata', obj);
+    }
 }
 
 async function connect(ws_url) {
