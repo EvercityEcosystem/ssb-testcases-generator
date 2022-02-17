@@ -275,13 +275,7 @@ async function scenario4() {
 
     await api.wait_until(0);
     let res = await api.release_bond_carbon_credits(investor2, 1, BOND10, 1_000_000);
-    // await api.wait_until(0);
-    // await api.release_bond_carbon_credits(issuer, 1, BOND2, 1_000_000);
-    // await api.wait_until(0);
-    // await api.release_bond_carbon_credits(issuer, 1, BOND3, 1_000_000);
-    // await api.wait_until(0);
-    // await api.release_bond_carbon_credits(issuer, 1, BOND4, 1_000_000);
-    // console.log(res)
+    console.log(JSON.stringify(res, null, 2));
     await api.wait_until(0);
 
     let investor1_asset_info = await api.get_user_asset_info(1, investor1.address);
