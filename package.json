@@ -11,6 +11,7 @@
     "scenario1": "node --experimental-json-modules index.js scenario1",
     "scenario2": "node --experimental-json-modules index.js scenario2",
     "scenario3": "node --experimental-json-modules index.js scenario3",
+    "scenario4": "node --experimental-json-modules index.js scenario4",
     "carbon_credits_scenario1": "node --experimental-json-modules index.js carbon_credits_scenario1"
   },
   "keywords": [

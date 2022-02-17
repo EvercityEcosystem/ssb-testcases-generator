@@ -141,6 +141,38 @@ function get_stable_bond(day, price) {
     }
 }
 
+function get_bond_carbon_credits_included(day, price) {
+    return {
+        "docs_pack_root_hash_main": [0],
+        "docs_pack_root_hash_legal": [0],
+        "docs_pack_root_hash_finance": [0],
+        "docs_pack_root_hash_tech": [0],
+
+        "impact_data_type": "POWER_GENERATED",
+        "impact_data_baseline": [null, null, null, null, null, null, null, null, null, null, null, null],
+        "impact_data_max_deviation_cap": null,
+        "impact_data_max_deviation_floor": null,
+        "impact_data_send_period": 0,
+        "interest_rate_penalty_for_missed_report": null,
+        "interest_rate_base_value": 3000,
+        "interest_rate_margin_cap": null,
+        "interest_rate_margin_floor": null,
+        "interest_rate_start_period_value": null,
+        "interest_pay_period": null,
+        "start_period": null,
+        "payment_period": null,
+        "bond_duration": 12,
+        "bond_finishing_period": 100 * day,
+        "mincap_deadline": 0,
+        "bond_units_mincap_amount": 100,
+        "bond_units_maxcap_amount": 600,
+        "bond_units_base_price": price * UNIT,
+        "carbon_metadata": {
+            "count": 100_000
+        }
+    }
+}
+
 async function scenario1() {
     let now = await api.now();
     await api.wait_until(0);
@@ -217,7 +249,9 @@ async function scenario1() {
     await api.wait_until(0);
     await api.buy_lot(investor2, investor3, now + 100 * BLOCK_INTERVAL, BOND3, 50, 600 * UNIT);
     console.log(`${investor3.meta.name} bought 50 bond units`);
-
+    
+    let bond_in_chain = await api.get_bond(BOND1);
+    console.log(JSON.stringify(bond_in_chain, null, 2));
 }
 
 async function scenario2() {
@@ -228,6 +262,34 @@ async function scenario2() {
 async function scenario3() {
     const bond = get_stable_bond(api.day_duration, 10);
     await bond_flow(bond);
+}
+
+async function scenario4() {
+    await api.mint(investor1, custodian, everusd * UNIT);
+    await api.mint(investor2, custodian, everusd * UNIT);
+    await api.mint(investor3, custodian, everusd * UNIT);
+    const bond1 = get_bond_carbon_credits_included(api.day_duration, 10);
+    console.log(bond1);
+    await bond_flow(bond1);
+
+    await api.wait_until(0);
+    let res = await api.release_bond_carbon_credits(investor2, 1, BOND10, 1_000_000);
+    // await api.wait_until(0);
+    // await api.release_bond_carbon_credits(issuer, 1, BOND2, 1_000_000);
+    // await api.wait_until(0);
+    // await api.release_bond_carbon_credits(issuer, 1, BOND3, 1_000_000);
+    // await api.wait_until(0);
+    // await api.release_bond_carbon_credits(issuer, 1, BOND4, 1_000_000);
+    // console.log(res)
+    await api.wait_until(0);
+
+    let investor1_asset_info = await api.get_user_asset_info(1, investor1.address);
+    let investor2_asset_info = await api.get_user_asset_info(1, investor2.address);
+    let investor3_asset_info = await api.get_user_asset_info(1, investor3.address);
+
+    console.log(JSON.stringify(investor1_asset_info, null, 2));
+    console.log(JSON.stringify(investor2_asset_info, null, 2));
+    console.log(JSON.stringify(investor3_asset_info, null, 2));
 }
 
 async function bond_flow(bond) {
@@ -500,6 +562,9 @@ async function main() {
             break;
         case 'scenario3':
             await scenario3.apply(api, args.slice(1));
+            break;
+        case 'scenario4':
+            await scenario4.apply(api, args.slice(1));
             break;
         case 'carbon_credits_scenario1':
             await carbon_credits_scenario1.apply(api, args.slice(1));

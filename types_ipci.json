@@ -65,7 +65,8 @@
     "mincap_deadline": "Compact<Moment>",
     "bond_units_mincap_amount": "Compact<BondUnitAmount>",
     "bond_units_maxcap_amount": "Compact<BondUnitAmount>",
-    "bond_units_base_price": "Compact<EverUSDBalance>"
+    "bond_units_base_price": "Compact<EverUSDBalance>",
+    "carbon_metadata": "Option<CarbonUnitsMetadata>"
   },
   "BondStructOf": {
     "inner": "BondInnerStructOf",
@@ -212,15 +213,18 @@
   "ExchangeId": "u128",
   "EverUSDAssetMintRequestId": "u128",
   "TradeRequest": {
-    "asset_holder": "AssetId",
+    "asset_holder": "AccountId",
     "carbon_credits_holder": "AccountId",
-    "asset_count": "AssetCount",
+    "asset_count": "Balance",
     "asset_id": "AssetId",
-    "carbon_credits_count": "CarbonCreditsCount",
-    "carbon_credits_id": "CarbonCreditId",
+    "carbon_credits_count": "Balance",
+    "carbon_credits_id": "AssetId",
     "approved": "ApproveMask"
   },
   "TradeRequestId": "u128",
   "CarbonCreditsId": "AssetId",
-  "CarbonCreditsBalance": "Balance"
+  "CarbonCreditsBalance": "Balance",
+  "CarbonUnitsMetadata": {
+    "count": "u128"
+  }
 }

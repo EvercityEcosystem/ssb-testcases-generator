@@ -327,7 +327,16 @@ class NodeConnection {
     async get_user_asset_info(asset_id, user) {
         const tasset_id = this.api.createType('AssetId', asset_id);
         const tuser = this.api.createType('AccountId', user);
-        return await this.api.query.evercityAssets.account(asset_id, user);
+        return await this.api.query.evercityAssets.account(tasset_id, tuser);
+    }
+
+    // Bond-Carbon Bridge:
+    async release_bond_carbon_credits(issuer, asset_id, bond_id, amount) {
+        const tasset_id = this.api.createType('AssetId', asset_id);
+        const tamount = this.api.createType('Balance', amount);
+        const tbond_id = this.api.createType('BondId', bond_id);
+
+        return await this.api.tx.evercityCarbonBridge.releaseBondCarbonCredits(tasset_id, tamount, tbond_id).signAndSend(issuer);
     }
 }
 
