@@ -27,7 +27,9 @@ const BOND3 = "ECBD103";
 const BOND4 = "ECBD104";
 const BOND5 = "ECBD105";
 // scenario2 bond
-const BOND10 = "ECBDSC8";
+// const BOND10 = "ECBDSC8";
+const BOND10 = "1111111111111111";
+
 
 // account roles
 const MASTER_ROLE = 1;
@@ -160,7 +162,8 @@ function get_bond_carbon_credits_included(day, price) {
         "interest_rate_start_period_value": null,
         "interest_pay_period": null,
         "start_period": null,
-        "payment_period": null,
+        // "payment_period": null,
+        "payment_period": 2 * day,
         "bond_duration": 12,
         "bond_finishing_period": 100 * day,
         "mincap_deadline": 0,
