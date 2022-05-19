@@ -316,6 +316,32 @@ class NodeConnection {
         await this.api.tx.evercityCarbonCredits.transferCarbonCredits(tasset_id, tnew_holder, tamount).signAndSend(holder);
     }
 
+    async create_carbon_credits_lot(holder, asset_id, deadline, amount, price_per_item) {
+        const tasset_id = this.api.createType('AssetId', asset_id);
+        const lot = this.api.createType('CarbonCreditsPackageLotOf', {
+            target_bearer: null,
+            deadline: deadline,
+            amount: amount,
+            price_per_item: price_per_item,
+        });
+
+        await this.api.tx.evercityCarbonCredits.createCarbonCreditLot(tasset_id, lot).signAndSend(holder);
+    }
+
+    async buy_carbon_credits_lot(investor, holder, asset_id, deadline, amount, price_per_item) {
+        const tasset_id = this.api.createType('AssetId', asset_id);
+        const tholder = this.api.createType('AccountId', holder);
+        const tamount = this.api.createType('ABalance', amount);
+        const lot = this.api.createType('CarbonCreditsPackageLotOf', {
+            target_bearer: null,
+            deadline: deadline,
+            amount: amount,
+            price_per_item: price_per_item,
+        });
+
+        await this.api.tx.evercityCarbonCredits.buyCarbonCreditLotUnits(tholder, tasset_id, lot, tamount).signAndSend(investor);
+    }
+
     async burn_carbon_credits(holder, asset_id, amount) {
         const tasset_id = this.api.createType('AssetId', asset_id);
         const tamount = this.api.createType('Balance', amount);

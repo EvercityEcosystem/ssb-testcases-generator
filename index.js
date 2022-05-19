@@ -486,9 +486,22 @@ async function carbon_credits_scenario1() {
     console.log(`${cc_project_owner.address} burned 50 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
 
-    // Transfer Carbon credits
-    await api.transfer_carbon_credits(cc_project_owner, CC_ASSET_ID, cc_investor.address, 50);
-    console.log(`${cc_project_owner.address} transfered 50 asset ${CC_ASSET_ID} carbon credits to ${cc_investor.address}`);
+    // // Transfer Carbon credits
+    // Create Carbon credits lot
+    let deadline = new Date().getTime() + 2_592_000;
+    await api.create_carbon_credits_lot(cc_project_owner, CC_ASSET_ID, deadline, 50, 10);
+    console.log(`${cc_project_owner.address} created lot with 50 carbon credits`);
+    await api.wait_until(0);
+    // Buy Carbon credits lot
+    const everusd = 2000;
+    await api.mint(cc_investor, custodian, everusd * UNIT);
+    console.log(`cc_investor has minted ${everusd} everusd`);
+    let everusd_balance = await api.account_balance(cc_investor.address);
+    console.log(``)
+    console.log(`cc_investor has ${everusd_balance} everusd`);
+    await api.wait_until(0);
+    await api.buy_carbon_credits_lot(cc_investor, cc_project_owner.address, CC_ASSET_ID, deadline, 50, 10);
+    console.log(`${cc_investor.address} bought lot with 50 carbon credits`);
     await api.wait_until(0);
     let investor_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_investor.address);
     console.log(`${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
@@ -545,6 +558,8 @@ async function main() {
             await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens_cc);
             await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens_cc);
             await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens_cc);
+            await api.create_account(cc_investor.address, INVESTOR_ROLE, basetokens_cc);
+            await api.create_pa_account(custodian.address, CUSTODIAN_ROLE, basetokens_cc);
 
             const now_cc = await api.now();
             console.log(`accounts for carbon credits created at ${now_cc}`);
