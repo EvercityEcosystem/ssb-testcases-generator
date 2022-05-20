@@ -496,9 +496,6 @@ async function carbon_credits_scenario1() {
     const everusd = 2000;
     await api.mint(cc_investor, custodian, everusd * UNIT);
     console.log(`cc_investor has minted ${everusd} everusd`);
-    let everusd_balance = await api.account_balance(cc_investor.address);
-    console.log(``)
-    console.log(`cc_investor has ${everusd_balance} everusd`);
     await api.wait_until(0);
     await api.buy_carbon_credits_lot(cc_investor, cc_project_owner.address, CC_ASSET_ID, deadline, 50, 10);
     console.log(`${cc_investor.address} bought lot with 50 carbon credits`);
@@ -558,6 +555,7 @@ async function main() {
             await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens_cc);
             await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens_cc);
             await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens_cc);
+            await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens_cc);
             await api.create_account(cc_investor.address, INVESTOR_ROLE, basetokens_cc);
             await api.create_pa_account(custodian.address, CUSTODIAN_ROLE, basetokens_cc);
 
