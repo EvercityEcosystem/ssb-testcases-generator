@@ -132,8 +132,8 @@ function get_stable_bond(day, price) {
         "interest_rate_margin_floor": null,
         "interest_rate_start_period_value": null,
         "interest_pay_period": null,
-        "start_period": null,
-        "payment_period": null,
+        "start_period": 2 * day,
+        "payment_period": 2 * day,
         "bond_duration": 12,
         "bond_finishing_period": 100 * day,
         "mincap_deadline": 0,
@@ -264,7 +264,7 @@ async function scenario2() {
 
 async function scenario3() {
     const bond = get_stable_bond(api.day_duration, 10);
-    await bond_flow(bond);
+    await stable_bond_flow(bond);
 }
 
 async function scenario4() {
@@ -349,6 +349,92 @@ async function bond_flow(bond) {
         await api.report_send(issuer, BOND10, i, 4000 + i * 1000);
         await api.wait_until(0);
         await api.report_approve(auditor, BOND10, i, 4000 + i * 1000);
+
+        // after coupon payment period
+        console.log(`wait for ${i} period (${2 * api.day_duration} sec)`);
+        await api.wait_until(bond_activation_time + api.day_duration * 1000 * (2 * i + 3));
+        // first investor withdraw every period
+        await api.withdraw_everusd(investor1, BOND10);
+    }
+
+    await api.mint(issuer, custodian, 40 * UNIT);
+    console.log(`${issuer.meta.name} get extra 40 everusd for pay off principal value`);
+    await api.wait_until(bond_activation_time + api.day_duration * 15);
+    await api.bond_redeem(issuer, BOND10);
+    console.log(`redeem bond '${BOND10}'`);
+    await api.wait_until(0);
+
+    await api.withdraw_everusd(investor1, BOND10);
+    await api.withdraw_everusd(investor2, BOND10);
+    await api.withdraw_everusd(investor3, BOND10);
+
+    console.log(`withdraw bond '${BOND10}' by all investors`);
+    bond_in_chain = await api.get_bond(BOND10);
+    console.log(JSON.stringify(bond_in_chain, null, 2));
+
+    await api.wait_until(0);
+}
+
+
+async function stable_bond_flow(bond) {
+    const everusd = 1000;
+    // MINT EVERUSD
+    await api.mint(investor1, custodian, everusd * UNIT);
+    await api.mint(investor2, custodian, everusd * UNIT);
+    await api.mint(investor3, custodian, everusd * UNIT);
+    console.log(`each investor has minted ${everusd} everusd`);
+
+    const initialBalance = await api.account_balance(issuer.address);
+    console.log(`initial ${issuer.meta.name} balance is ${initialBalance}`);
+
+    // RELEASE BOND
+    let now = await api.now();
+
+    await api.prepare_bond(issuer, BOND10, bond);
+    console.log(`'${BOND10}' has been prepared `);
+    await api.wait_until(0);
+
+
+    await api.release_bond(api.master, BOND10);
+    console.log(`'${BOND10}' has been released `);
+    await api.wait_until(0);
+
+    let bond_in_chain = await api.get_bond(BOND10);
+    console.log(JSON.stringify(bond_in_chain, null, 2));
+
+    await api.buy_bond_units(investor1, BOND10, 10);
+    await api.buy_bond_units(investor2, BOND10, 50);
+    await api.buy_bond_units(investor3, BOND10, 100);
+    console.log(`'${BOND10}' bond units bought by`);
+    console.log(`  ${investor1.meta.name} - 10 units`);
+    console.log(`  ${investor2.meta.name} - 50 units`);
+    console.log(`  ${investor3.meta.name} - 100 units`);
+
+    await api.wait_until(0);
+    await api.activate_bond(api.master, auditor.address, BOND10);
+    console.log(`'${BOND10}' has been activated `);
+    await api.wait_until(0);
+
+    bond_in_chain = await api.get_bond(BOND10);
+    //console.log( JSON.stringify(bond_in_chain, null, 2) );
+
+    const bond_activation_time = bond_in_chain.active_start_date.toNumber();
+    console.log(`bond activated at ${bond_activation_time}`);
+
+    await api.wait_until(0);
+    const newBalance = await api.account_balance(issuer.address);
+    console.log(`new ${issuer.meta.name} balance is ${newBalance}`);
+    // first report period
+    await api.wait_until(bond_activation_time + 1000 * api.day_duration * 1);
+
+    for (let i = 0; i < 14; i++) {
+        // deposit everusd to bond fund for pay off coupon yield
+        await api.deposit(issuer, BOND10, 1000000000);
+        // // report period
+
+        // await api.report_send(issuer, BOND10, i, 4000 + i * 1000);
+        // await api.wait_until(0);
+        // await api.report_approve(auditor, BOND10, i, 4000 + i * 1000);
 
         // after coupon payment period
         console.log(`wait for ${i} period (${2 * api.day_duration} sec)`);
