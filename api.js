@@ -235,8 +235,8 @@ class NodeConnection {
     }
 }
 
-async function connect(ws_url) {
-    const ws = process.env.ws_url || "ws://localhost:9944";
+async function connect() {
+    const ws = process.env.WS_URL || "ws://localhost:9944";
     const wsProvider = new WsProvider(ws);
 
     const api = await ApiPromise.create({
