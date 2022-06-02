@@ -145,8 +145,23 @@ class NodeConnection {
         const bond = await this.api.query.evercity.bondRegistry(tbondid);
         await this.api.tx.evercity.bondUnitPackageBuy(bondid, bond.nonce.toNumber(), count).signAndSend(investor, {
             nonce: -1
+        },
+        (submittableResult) => {
+            if (submittableResult.status.isFinalized) {
+                const result = submittableResult.toHuman();
+                const events = result.events.map(e => `${e.event.section}.${e.event.method}`);
+
+                if (!events.includes('evercity.BondUnitSold')) {
+                    console.error('buy_bond_units: evercity.BondUnitSold', ' not in events [', events.join(';'), ']');
+                }
+            }
         });
-        return bond;
+        return await this.api.query.evercity.bondUnitPackageRegistry(tbondid, investor.address);
+    }
+
+    async get_bond_units(bond_id, investor) {
+        const tbondid = this.api.createType('BondId', bond_id);
+        return await this.api.query.evercity.bondUnitPackageRegistry(tbondid, investor);
     }
 
     async give_back_bond_units(investor, bondid, count) {
@@ -265,7 +280,40 @@ class NodeConnection {
     async cc_create_project(owner, standard, file_id) {
         const tstandard = this.api.createType('Standard', standard);
         const tfile_id = this.api.createType('Option<FileId>', file_id);
-        await this.api.tx.evercityCarbonCredits.createProject(tstandard, tfile_id).signAndSend(owner);
+        await this.api.tx.evercityCarbonCredits.createProject(tstandard, tfile_id).signAndSend(owner,  ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
+    }
+
+    async cc_create_bond_project(owner, standard, file_id, bond_id) {
+        const tstandard = this.api.createType('Standard', standard);
+        console.log("tstandard.isGoldStandardBond "+tstandard.isGoldStandardBond);
+        console.log("tstandard.isGoldStandard: "+tstandard.isGoldStandard);
+
+        const tfile_id = this.api.createType('Option<FileId>', file_id);
+        await this.api.tx.evercityCarbonCredits.createBondProject(tstandard, tfile_id, bond_id).signAndSend(owner
+          );
+    }
+
+    async get_last_cc_project_id() {
+        return await this.api.query.evercityCarbonCredits.lastID();
+    }
+
+    async get_cc_project(project_id){
+        return await this.api.query.evercityCarbonCredits.projectById(project_id);
     }
 
     async cc_assign_project_signer(owner, signer, role, project_id) {
@@ -357,12 +405,11 @@ class NodeConnection {
     }
 
     // Bond-Carbon Bridge:
-    async release_bond_carbon_credits(issuer, asset_id, bond_id, amount) {
+    async release_bond_carbon_credits(issuer, asset_id, bond_id) {
         const tasset_id = this.api.createType('AssetId', asset_id);
-        const tamount = this.api.createType('Balance', amount);
         const tbond_id = this.api.createType('BondId', bond_id);
 
-        return await this.api.tx.evercityCarbonBridge.releaseBondCarbonCredits(tasset_id, tamount, tbond_id).signAndSend(issuer);
+        return await this.api.tx.evercityCarbonCredits.releaseBondCarbonCredits(tbond_id, tasset_id).signAndSend(issuer);
     }
 
     create_carbon_metadata_type(obj) {
@@ -372,6 +419,8 @@ class NodeConnection {
 
 async function connect(ws_url) {
     const ws = process.env.ws_url || "ws://localhost:9944";
+   // const ws = process.env.ws_url ||"wss://evercity-chain-ngxivlzyeq-ey.a.run.app";// "ws://localhost:9944";
+
     const wsProvider = new WsProvider(ws);
 
     const api = await ApiPromise.create({
