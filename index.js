@@ -414,7 +414,7 @@ async function bond_flow(bond) {
     // first report period
     await api.wait_until(bond_activation_time + 1000 * api.day_duration * 1);
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 12; i++) {
         // deposit everusd to bond fund for pay off coupon yield
         await api.deposit(issuer, BOND10, 1000000000);
         // report period
@@ -504,7 +504,7 @@ async function stable_bond_flow(bond, bond_id) {
     // first report period
     await api.wait_until(bond_activation_time + 1000 * api.day_duration * 1);
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 12; i++) {
         // deposit everusd to bond fund for pay off coupon yield
         await api.deposit(issuer, bond_id, 1000000000);
         
