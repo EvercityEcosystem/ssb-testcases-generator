@@ -54,11 +54,43 @@ class NodeConnection {
         this.api = null;
     }
     async transfer(addr, amount) {
-        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master);
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async init() {
-        await this.api.tx.evercity.setMaster().signAndSend(this.master);
+        await this.api.tx.evercity.setMaster().signAndSend(this.master,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async unit_balance(addr) {
@@ -79,25 +111,105 @@ class NodeConnection {
     async create_account(addr, role, amount) {
         await this.api.tx.evercity.accountAddWithRoleAndData(addr, role, 0).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async request_everusd(account, amount) {
         await this.api.tx.evercity.tokenMintRequestCreateEverusd(amount).signAndSend(account, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async mint(account, custodian, amount) {
         await this.api.tx.evercity.tokenMintRequestCreateEverusd(amount).signAndSend(account, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         await this.api.tx.evercity.tokenMintRequestConfirmEverusd(account.address, amount).signAndSend(custodian, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async account_balance(addr) {
@@ -110,7 +222,23 @@ class NodeConnection {
         bond.mincap_deadline = now.toNumber() + DEFAULT_MINCAP_DEADLINE;
         await this.api.tx.evercity.bondAddNew(bondid, bond).signAndSend(issuer, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async get_bond(bondid) {
@@ -123,7 +251,23 @@ class NodeConnection {
 
         await this.api.tx.evercity.bondRelease(bondid, bond.nonce.toNumber()).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async activate_bond(master, auditorid, bondid) {
@@ -132,11 +276,43 @@ class NodeConnection {
 
         await this.api.tx.evercity.bondSetAuditor(bondid, auditorid).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
 
         await this.api.tx.evercity.bondActivate(bondid, bond.nonce.toNumber() + 1).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         return bond;
     }
 
@@ -167,7 +343,23 @@ class NodeConnection {
     async give_back_bond_units(investor, bondid, count) {
         await this.api.tx.evercity.bondUnitPackageReturn(bondid, count).signAndSend(investor, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async transfer_ownership(investor1, investor2, moment, bondid, count, cost) {
@@ -180,11 +372,43 @@ class NodeConnection {
 
         await this.api.tx.evercity.bondUnitLotBid(bondid, lot).signAndSend(investor1, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         if (investor2 !== null) {
             await this.api.tx.evercity.bondUnitLotSettle(bondid, investor1.address, lot).signAndSend(investor2, {
                 nonce: -1
-            });
+            },
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
         }
     }
 
@@ -198,28 +422,92 @@ class NodeConnection {
 
         await this.api.tx.evercity.bondUnitLotSettle(bondid, investor1.address, lot).signAndSend(investor2, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async deposit(issuer, bondid, amount) {
         const tbondid = this.api.createType('BondId', bondid);
         await this.api.tx.evercity.bondDepositEverusd(tbondid, amount).signAndSend(issuer, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async report_send(issuer, bondid, period, impact_data) {
         const tbondid = this.api.createType('BondId', bondid);
         await this.api.tx.evercity.bondImpactReportSend(tbondid, period, impact_data).signAndSend(issuer, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async report_approve(auditor, bondid, period, impact_data) {
         const tbondid = this.api.createType('BondId', bondid);
         await this.api.tx.evercity.bondImpactReportApprove(tbondid, period, impact_data).signAndSend(auditor, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async withdraw_everusd(account, bondid) {
@@ -245,8 +533,24 @@ class NodeConnection {
     async bond_redeem(issuer, bondid) {
         const tbondid = this.api.createType('BondId', bondid);
         await this.api.tx.evercity.bondRedeem(tbondid).signAndSend(issuer, {
-            nonce: -1
-        });
+            nonce: -1,
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     // FileSign:
@@ -254,26 +558,102 @@ class NodeConnection {
         const ttag = this.api.createType('Vec<u8>', tag);
         const tfilehash = this.api.createType('H256', filehash);
         const tfile_id = this.api.createType('Option<FileId>', file_id);
-        await this.api.tx.evercityFilesign.createNewFile(ttag, tfilehash, tfile_id).signAndSend(owner);
+        await this.api.tx.evercityFilesign.createNewFile(ttag, tfilehash, tfile_id).signAndSend(owner,  ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     // Accounts:
     async create_pa_account(addr, role, amount) {
         await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role).signAndSend(this.master, {
             nonce: -1
-        });
+        },
+        ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
             nonce: -1
-        });
+        },  ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     async set_pa_master(addr, amount) {
         await this.api.tx.evercityAccounts.setMaster(addr).signAndSend(this.master, {
             nonce: -1
-        });
+        },  ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
         await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
             nonce: -1
-        });
+        },  ({ status, events, dispatchError }) => {
+            // status would still be set, but in the case of error we can shortcut
+            // to just check it (so an error would indicate InBlock or Finalized)
+            if (dispatchError) {
+              if (dispatchError.isModule) {
+                // for module errors, we have the section indexed, lookup
+                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                const { details, name, section } = decoded;
+        
+                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+              } else {
+                // Other, CannotLookup, BadOrigin, no extra info
+                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+              }
+            }
+          });
     }
 
     // Carbon Credits: 
@@ -304,8 +684,23 @@ class NodeConnection {
         console.log("tstandard.isGoldStandard: "+tstandard.isGoldStandard);
 
         const tfile_id = this.api.createType('Option<FileId>', file_id);
-        await this.api.tx.evercityCarbonCredits.createBondProject(tstandard, tfile_id, bond_id).signAndSend(owner
-          );
+        await this.api.tx.evercityCarbonCredits.createBondProject(tstandard, tfile_id, bond_id).signAndSend(owner,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async get_last_cc_project_id() {
@@ -318,11 +713,43 @@ class NodeConnection {
 
     async cc_assign_project_signer(owner, signer, role, project_id) {
         const tsigner = this.api.createType('AccountId', signer);
-        await this.api.tx.evercityCarbonCredits.assignProjectSigner(tsigner, role, project_id).signAndSend(owner);
+        await this.api.tx.evercityCarbonCredits.assignProjectSigner(tsigner, role, project_id).signAndSend(owner,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async cc_sign_project(acc, project_id) {
-        await this.api.tx.evercityCarbonCredits.signProject(project_id).signAndSend(acc);
+        await this.api.tx.evercityCarbonCredits.signProject(project_id).signAndSend(acc,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async cc_create_report_with_file(owner, project_id, file_id, filehash, tag, carbon_credits_count, asset_name, asset_symbol, asset_decimals) {
@@ -336,16 +763,64 @@ class NodeConnection {
 
 
         await this.api.tx.evercityCarbonCredits.createAnnualReportWithFile(project_id, tfile_id, tfilehash, 
-                        ttag, tcarbon_credits_count, tasset_name, tasset_symbol, tasset_decimals).signAndSend(owner);
+                        ttag, tcarbon_credits_count, tasset_name, tasset_symbol, tasset_decimals).signAndSend(owner,
+                            ({ status, events, dispatchError }) => {
+                                // status would still be set, but in the case of error we can shortcut
+                                // to just check it (so an error would indicate InBlock or Finalized)
+                                if (dispatchError) {
+                                  if (dispatchError.isModule) {
+                                    // for module errors, we have the section indexed, lookup
+                                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                                    const { details, name, section } = decoded;
+                            
+                                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                                  } else {
+                                    // Other, CannotLookup, BadOrigin, no extra info
+                                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                                  }
+                                }
+                              });
     }
 
     async cc_assign_report_signer(owner, signer, role, project_id) {
         const tsigner = this.api.createType('AccountId', signer);
-        await this.api.tx.evercityCarbonCredits.assignLastAnnualReportSigner(tsigner, role, project_id).signAndSend(owner);
+        await this.api.tx.evercityCarbonCredits.assignLastAnnualReportSigner(tsigner, role, project_id).signAndSend(owner,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async cc_sign_last_report(acc, project_id) {
-        await this.api.tx.evercityCarbonCredits.signLastAnnualReport(project_id).signAndSend(acc);
+        await this.api.tx.evercityCarbonCredits.signLastAnnualReport(project_id).signAndSend(acc,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async cc_release_carbon_credits(owner, project_id, asset_id, new_carbon_credits_holder, min_balance){
@@ -353,7 +828,23 @@ class NodeConnection {
         const tnew_carbon_credits_holder = this.api.createType('AccountId', new_carbon_credits_holder);
         const tmin_balance = this.api.createType('Balance', min_balance);
 
-        await this.api.tx.evercityCarbonCredits.releaseCarbonCredits(project_id, tasset_id, tnew_carbon_credits_holder, tmin_balance).signAndSend(owner);
+        await this.api.tx.evercityCarbonCredits.releaseCarbonCredits(project_id, tasset_id, tnew_carbon_credits_holder, tmin_balance).signAndSend(owner,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async transfer_carbon_credits(holder, asset_id, new_holder, amount) {
@@ -361,7 +852,23 @@ class NodeConnection {
         const tnew_holder = this.api.createType('AccountId', new_holder);
         const tamount = this.api.createType('Balance', amount);
 
-        await this.api.tx.evercityCarbonCredits.transferCarbonCredits(tasset_id, tnew_holder, tamount).signAndSend(holder);
+        await this.api.tx.evercityCarbonCredits.transferCarbonCredits(tasset_id, tnew_holder, tamount).signAndSend(holder,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async create_carbon_credits_lot(holder, asset_id, deadline, amount, price_per_item) {
@@ -373,7 +880,23 @@ class NodeConnection {
             price_per_item: price_per_item,
         });
 
-        await this.api.tx.evercityCarbonCredits.createCarbonCreditLot(tasset_id, lot).signAndSend(holder);
+        await this.api.tx.evercityCarbonCredits.createCarbonCreditLot(tasset_id, lot).signAndSend(holder,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async buy_carbon_credits_lot(investor, holder, asset_id, deadline, amount, price_per_item) {
@@ -387,14 +910,46 @@ class NodeConnection {
             price_per_item: price_per_item,
         });
 
-        await this.api.tx.evercityCarbonCredits.buyCarbonCreditLotUnits(tholder, tasset_id, lot, tamount).signAndSend(investor);
+        await this.api.tx.evercityCarbonCredits.buyCarbonCreditLotUnits(tholder, tasset_id, lot, tamount).signAndSend(investor,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     async burn_carbon_credits(holder, asset_id, amount) {
         const tasset_id = this.api.createType('AssetId', asset_id);
         const tamount = this.api.createType('Balance', amount);
 
-        await this.api.tx.evercityCarbonCredits.burnCarbonCredits(tasset_id, tamount).signAndSend(holder);
+        await this.api.tx.evercityCarbonCredits.burnCarbonCredits(tasset_id, tamount).signAndSend(holder,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     // Assets:
@@ -409,7 +964,23 @@ class NodeConnection {
         const tasset_id = this.api.createType('AssetId', asset_id);
         const tbond_id = this.api.createType('BondId', bond_id);
 
-        return await this.api.tx.evercityCarbonCredits.releaseBondCarbonCredits(tbond_id, tasset_id).signAndSend(issuer);
+        return await this.api.tx.evercityCarbonCredits.releaseBondCarbonCredits(tbond_id, tasset_id).signAndSend(issuer,
+            ({ status, events, dispatchError }) => {
+                // status would still be set, but in the case of error we can shortcut
+                // to just check it (so an error would indicate InBlock or Finalized)
+                if (dispatchError) {
+                  if (dispatchError.isModule) {
+                    // for module errors, we have the section indexed, lookup
+                    const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+                    const { details, name, section } = decoded;
+            
+                    console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+                  } else {
+                    // Other, CannotLookup, BadOrigin, no extra info
+                    console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+                  }
+                }
+              });
     }
 
     create_carbon_metadata_type(obj) {
