@@ -992,15 +992,13 @@ class NodeConnection {
     }
 }
 
-async function connect(ws_url) {
-    const ws = process.env.ws_url || "ws://localhost:9944";
-   // const ws = process.env.ws_url ||"wss://evercity-chain-ngxivlzyeq-ey.a.run.app";// "ws://localhost:9944";
-
+async function connect() {
+    const ws = process.env.WS_URL || "ws://localhost:9944";
     const wsProvider = new WsProvider(ws);
 
     const api = await ApiPromise.create({
         provider: wsProvider,
-        types: JSON.parse(readFileSync(process.env.types || "./types_ipci.json", 'utf8'))
+        types: JSON.parse(readFileSync(process.env.types || "./types.json", 'utf8'))
     });
 
     let o = new NodeConnection(api);
