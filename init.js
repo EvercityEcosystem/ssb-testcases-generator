@@ -9,8 +9,8 @@ const keyring = new Keyring({
 });
 
 //replace with keyring.addFromUri("//Alice") if use with IPCI chain
-export const master = keyring.addFromUri('gallery suffer express depend kite math rich exclude vanish minor risk auction', {
-    name: 'MASTER (master)'
+export const bond_emitter = keyring.addFromUri('gallery suffer express depend kite math rich exclude vanish minor risk auction', {
+    name: 'bond_emitter'
 });
 export const custodian = keyring.addFromUri('feature wagon lunar ready topic turkey video firm minute quote critic card', {
     name: 'custodian'

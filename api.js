@@ -8,6 +8,9 @@ import dotenv from 'dotenv';
 import {
     readFileSync
 } from 'fs';
+import {
+  bond_emitter
+} from './init.js';
 dotenv.config();
 
 
@@ -54,7 +57,7 @@ class NodeConnection {
         this.api = null;
     }
     async transfer(addr, amount) {
-        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master,
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.accounts_master,
             ({ status, events, dispatchError }) => {
                 // status would still be set, but in the case of error we can shortcut
                 // to just check it (so an error would indicate InBlock or Finalized)
@@ -74,7 +77,7 @@ class NodeConnection {
     }
 
     async init() {
-        await this.api.tx.evercity.setMaster().signAndSend(this.master,
+        await this.api.tx.evercityAccounts.setMaster().signAndSend(this.accounts_master,
             ({ status, events, dispatchError }) => {
                 // status would still be set, but in the case of error we can shortcut
                 // to just check it (so an error would indicate InBlock or Finalized)
@@ -109,7 +112,7 @@ class NodeConnection {
 
 
     async create_account(addr, role, amount) {
-        await this.api.tx.evercity.accountAddWithRoleAndData(addr, role, 0).signAndSend(this.master, {
+        await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role, 0).signAndSend(this.accounts_master, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -128,7 +131,7 @@ class NodeConnection {
               }
             }
           });
-        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
+        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.accounts_master, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -246,10 +249,10 @@ class NodeConnection {
         return await this.api.query.evercity.bondRegistry(tbondid);
     }
 
-    async release_bond(master, bondid) {
+    async release_bond(bond_emitter, bondid) {
         const bond = await this.get_bond(bondid);
 
-        await this.api.tx.evercity.bondRelease(bondid, bond.nonce.toNumber()).signAndSend(this.master, {
+        await this.api.tx.evercity.bondRelease(bondid, bond.nonce.toNumber()).signAndSend(bond_emitter, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -270,11 +273,11 @@ class NodeConnection {
           });
     }
 
-    async activate_bond(master, auditorid, bondid) {
+    async activate_bond(bond_emitter, auditorid, bondid) {
         // get nonce value
         const bond = await this.get_bond(bondid);
 
-        await this.api.tx.evercity.bondSetAuditor(bondid, auditorid).signAndSend(this.master, {
+        await this.api.tx.evercity.bondSetAuditor(bondid, auditorid).signAndSend(bond_emitter, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -294,7 +297,7 @@ class NodeConnection {
             }
           });
 
-        await this.api.tx.evercity.bondActivate(bondid, bond.nonce.toNumber() + 1).signAndSend(this.master, {
+        await this.api.tx.evercity.bondActivate(bondid, bond.nonce.toNumber() + 1).signAndSend(bond_emitter, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -576,87 +579,88 @@ class NodeConnection {
           });
     }
 
-    // Accounts:
-    async create_pa_account(addr, role, amount) {
-        await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role).signAndSend(this.master, {
-            nonce: -1
-        },
-        ({ status, events, dispatchError }) => {
-            // status would still be set, but in the case of error we can shortcut
-            // to just check it (so an error would indicate InBlock or Finalized)
-            if (dispatchError) {
-              if (dispatchError.isModule) {
-                // for module errors, we have the section indexed, lookup
-                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
-                const { details, name, section } = decoded;
+    // // Accounts:
+    // async create_pa_account(addr, role, amount) {
+    //     await this.api.tx.evercityAccounts.accountAddWithRoleAndData(addr, role).signAndSend(this.accounts_master, {
+    //         nonce: -1
+    //     },
+    //     ({ status, events, dispatchError }) => {
+    //         // status would still be set, but in the case of error we can shortcut
+    //         // to just check it (so an error would indicate InBlock or Finalized)
+    //         if (dispatchError) {
+    //           if (dispatchError.isModule) {
+    //             // for module errors, we have the section indexed, lookup
+    //             const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+    //             const { details, name, section } = decoded;
         
-                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
-              }
-            }
-          });
-        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
-            nonce: -1
-        },  ({ status, events, dispatchError }) => {
-            // status would still be set, but in the case of error we can shortcut
-            // to just check it (so an error would indicate InBlock or Finalized)
-            if (dispatchError) {
-              if (dispatchError.isModule) {
-                // for module errors, we have the section indexed, lookup
-                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
-                const { details, name, section } = decoded;
+    //             console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+    //           } else {
+    //             // Other, CannotLookup, BadOrigin, no extra info
+    //             console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+    //           }
+    //         }
+    //       });
+    //     await this.api.tx.balances.transfer(addr, amount).signAndSend(this.accounts_master, {
+    //         nonce: -1
+    //     },  ({ status, events, dispatchError }) => {
+    //         // status would still be set, but in the case of error we can shortcut
+    //         // to just check it (so an error would indicate InBlock or Finalized)
+    //         if (dispatchError) {
+    //           if (dispatchError.isModule) {
+    //             // for module errors, we have the section indexed, lookup
+    //             const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+    //             const { details, name, section } = decoded;
         
-                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
-              }
-            }
-          });
-    }
+    //             console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+    //           } else {
+    //             // Other, CannotLookup, BadOrigin, no extra info
+    //             console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+    //           }
+    //         }
+    //       });
+    // }
 
-    async set_pa_master(addr, amount) {
-        await this.api.tx.evercityAccounts.setMaster(addr).signAndSend(this.master, {
-            nonce: -1
-        },  ({ status, events, dispatchError }) => {
-            // status would still be set, but in the case of error we can shortcut
-            // to just check it (so an error would indicate InBlock or Finalized)
-            if (dispatchError) {
-              if (dispatchError.isModule) {
-                // for module errors, we have the section indexed, lookup
-                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
-                const { details, name, section } = decoded;
+    // async set_pa_master(addr, amount) {
+    //     await this.api.tx.evercityAccounts.setMaster(addr).signAndSend(this.accounts_master, {
+    //         nonce: -1
+    //     },  ({ status, events, dispatchError }) => {
+    //         // status would still be set, but in the case of error we can shortcut
+    //         // to just check it (so an error would indicate InBlock or Finalized)
+    //         if (dispatchError) {
+    //           if (dispatchError.isModule) {
+    //             // for module errors, we have the section indexed, lookup
+    //             const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+    //             const { details, name, section } = decoded;
         
-                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
-              }
-            }
-          });
-        await this.api.tx.balances.transfer(addr, amount).signAndSend(this.master, {
-            nonce: -1
-        },  ({ status, events, dispatchError }) => {
-            // status would still be set, but in the case of error we can shortcut
-            // to just check it (so an error would indicate InBlock or Finalized)
-            if (dispatchError) {
-              if (dispatchError.isModule) {
-                // for module errors, we have the section indexed, lookup
-                const decoded = this.api.registry.findMetaError(dispatchError.asModule);
-                const { details, name, section } = decoded;
+    //             console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+    //           } else {
+    //             // Other, CannotLookup, BadOrigin, no extra info
+    //             console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+    //           }
+    //         }
+    //       });
+    //     await this.api.tx.balances.transfer(addr, amount).signAndSend(this.accounts_master, {
+    //         nonce: -1
+    //     },  ({ status, events, dispatchError }) => {
+    //         // status would still be set, but in the case of error we can shortcut
+    //         // to just check it (so an error would indicate InBlock or Finalized)
+    //         if (dispatchError) {
+    //           if (dispatchError.isModule) {
+    //             // for module errors, we have the section indexed, lookup
+    //             const decoded = this.api.registry.findMetaError(dispatchError.asModule);
+    //             const { details, name, section } = decoded;
         
-                console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
-              } else {
-                // Other, CannotLookup, BadOrigin, no extra info
-                console.log(`!!!      dispatchError ${dispatchError.toString()}`);
-              }
-            }
-          });
-    }
+    //             console.log(`!!!      dispatchError ${section}.${name}: ${details}`);
+    //           } else {
+    //             // Other, CannotLookup, BadOrigin, no extra info
+    //             console.log(`!!!      dispatchError ${dispatchError.toString()}`);
+    //           }
+    //         }
+    //       });
+    // }
 
     // Carbon Credits: 
+    
     async cc_create_project(owner, standard, file_id) {
         const tstandard = this.api.createType('Standard', standard);
         const tfile_id = this.api.createType('Option<FileId>', file_id);
@@ -1022,8 +1026,8 @@ async function connect(ws_url) {
 
     o.unsub = unsub;
     o.day_duration = api.consts.evercity.timeStep.toNumber();
-    o.master = keyring.addFromUri('//Alice', {
-        name: 'Alice (master)'
+    o.accounts_master = keyring.addFromUri('//Alice', {
+        name: 'Alice (accounts_master)'
     });
 
     // Retrieve the chain name

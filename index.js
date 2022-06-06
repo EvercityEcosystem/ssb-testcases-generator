@@ -1,6 +1,6 @@
 import {
     api,
-    master,
+    bond_emitter,
     custodian,
     auditor,
     manager,
@@ -41,6 +41,7 @@ const ISSUER_ROLE = 4;
 const INVESTOR_ROLE = 8;
 const AUDITOR_ROLE = 16;
 const MANAGER_ROLE = 32;
+const BOND_EMITTER = 128;
 
 // pallet accounts roles
 
@@ -64,8 +65,7 @@ const CC_ASSET_ID = 1;
 
 const GOLD_STANDARD = "GOLD_STANDARD";
 
-const accounts = [
-    master,
+const accounts = [bond_emitter,
     custodian,
     auditor,
     manager,
@@ -205,10 +205,10 @@ async function scenario1() {
     now = await api.now();
     await api.wait_until(0);
 
-    await api.release_bond(api.master, BOND1);
-    await api.release_bond(api.master, BOND2);
-    await api.release_bond(api.master, BOND3);
-    await api.release_bond(api.master, BOND4);
+    await api.release_bond(bond_emitter, BOND1);
+    await api.release_bond(bond_emitter, BOND2);
+    await api.release_bond(bond_emitter, BOND3);
+    await api.release_bond(bond_emitter, BOND4);
     console.log(`'${BOND1}' '${BOND2}' '${BOND3}' '${BOND4}' bonds released`);
 
     await api.wait_until(0);
@@ -232,9 +232,9 @@ async function scenario1() {
 
     // ACTIVATE BONDS
     await api.wait_until(0);
-    await api.activate_bond(api.master, auditor.address, BOND1);
-    await api.activate_bond(api.master, auditor.address, BOND2);
-    await api.activate_bond(api.master, auditor.address, BOND3);
+    await api.activate_bond(bond_emitter, auditor.address, BOND1);
+    await api.activate_bond(bond_emitter, auditor.address, BOND2);
+    await api.activate_bond(bond_emitter, auditor.address, BOND3);
 
     console.log(`'${BOND1}' '${BOND2}' '${BOND3}' bonds activated`);
 
@@ -382,7 +382,7 @@ async function bond_flow(bond) {
     await api.wait_until(0);
 
 
-    await api.release_bond(api.master, BOND10);
+    await api.release_bond(bond_emitter, BOND10);
     console.log(`'${BOND10}' has been released `);
     await api.wait_until(0);
 
@@ -398,7 +398,7 @@ async function bond_flow(bond) {
     console.log(`  ${investor3.meta.name} - 100 units`);
 
     await api.wait_until(0);
-    await api.activate_bond(api.master, auditor.address, BOND10);
+    await api.activate_bond(bond_emitter, auditor.address, BOND10);
     console.log(`'${BOND10}' has been activated `);
     await api.wait_until(0);
 
@@ -432,7 +432,7 @@ async function bond_flow(bond) {
 
     await api.mint(issuer, custodian, 40 * UNIT);
     console.log(`${issuer.meta.name} get extra 40 everusd for pay off principal value`);
-    await api.wait_until(bond_activation_time + api.day_duration * 15);
+    await api.wait_until(bond_activation_time + api.day_duration * 1000 * (2 * 12 + 3));
     await api.bond_redeem(issuer, BOND10);
     console.log(`redeem bond '${BOND10}'`);
     await api.wait_until(0);
@@ -440,6 +440,7 @@ async function bond_flow(bond) {
     await api.withdraw_everusd(investor1, BOND10);
     await api.withdraw_everusd(investor2, BOND10);
     await api.withdraw_everusd(investor3, BOND10);
+    await api.wait_until(0);
 
     console.log(`withdraw bond '${BOND10}' by all investors`);
     bond_in_chain = await api.get_bond(BOND10);
@@ -468,7 +469,7 @@ async function stable_bond_flow(bond, bond_id) {
     await api.wait_until(0);
 
 
-    await api.release_bond(api.master, bond_id);
+    await api.release_bond(bond_emitter, bond_id);
     console.log(`'${bond_id}' has been released `);
     await api.wait_until(0);
 
@@ -483,12 +484,9 @@ async function stable_bond_flow(bond, bond_id) {
     console.log(`  ${investor2.meta.name} - 50 units`);
     console.log(`  ${investor3.meta.name} - 100 units`);
     await api.wait_until(0);
-    console.log(`Bond units of investor1: ${JSON.stringify(u1, null, 2)}`);
-    console.log(`Bond units of investor2: ${JSON.stringify(u2, null, 2)}`);
-    console.log(`Bond units of investor3: ${JSON.stringify(u3, null, 2)}`);
 
     await api.wait_until(0);
-    await api.activate_bond(api.master, auditor.address, bond_id);
+    await api.activate_bond(bond_emitter, auditor.address, bond_id);
     console.log(`'${bond_id}' has been activated `);
     await api.wait_until(0);
 
@@ -517,7 +515,7 @@ async function stable_bond_flow(bond, bond_id) {
 
     await api.mint(issuer, custodian, 40 * UNIT);
     console.log(`${issuer.meta.name} get extra 40 everusd for pay off principal value`);
-    await api.wait_until(bond_activation_time + api.day_duration * 15);
+    await api.wait_until(bond_activation_time + api.day_duration * 1000 * (2 * 12 + 3));
     await api.bond_redeem(issuer, bond_id);
     console.log(`redeem bond '${bond_id}'`);
     await api.wait_until(0);
@@ -525,6 +523,7 @@ async function stable_bond_flow(bond, bond_id) {
     await api.withdraw_everusd(investor1, bond_id);
     await api.withdraw_everusd(investor2, bond_id);
     await api.withdraw_everusd(investor3, bond_id);
+    await api.wait_until(0);
 
     console.log(`withdraw bond '${bond_id}' by all investors`);
     bond_in_chain = await api.get_bond(bond_id);
@@ -684,8 +683,8 @@ function get_random_16b_id() {
 
 async function main() {
 
-    let balance = await api.unit_balance(api.master.address);
-    console.log(`master balance is ${balance} UNITS`);
+    let balance = await api.unit_balance(api.accounts_master.address);
+    console.log(`accounts_master balance is ${balance} UNITS`);
 
 
     var args = process.argv.slice(2);
@@ -695,11 +694,12 @@ async function main() {
             await api.init();
             const basetokens = 60000000000000;
 
-            await api.create_account(master.address, MASTER_ROLE, basetokens);
+            //await api.set_pa_master(accounts_master.address, basetokens);
+            await api.create_account(bond_emitter.address, BOND_EMITTER, basetokens);
             await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens);
             await api.create_account(auditor.address, AUDITOR_ROLE, basetokens);
             await api.create_account(manager.address, MANAGER_ROLE, basetokens);
-            await api.create_account(issuer.address, ISSUER_ROLE, basetokens);
+            await api.create_account(issuer.address, ISSUER_ROLE | CC_PROJECT_OWNER_ROLE, basetokens);
             await api.create_account(investor1.address, INVESTOR_ROLE, basetokens);
             await api.create_account(investor2.address, INVESTOR_ROLE, basetokens);
             await api.create_account(investor3.address, INVESTOR_ROLE, basetokens);
@@ -708,22 +708,12 @@ async function main() {
             const now = await api.now();
             console.log(`accounts created at ${now}`);
 
-            break;
-        case 'init_cc':
-            await api.init();
-            const basetokens_cc = 60000000000000;
-
             // create pallet-evercity-accounts accounts:
-            await api.set_pa_master(accounts_master.address, basetokens_cc);
-            await api.create_pa_account(cc_project_owner.address, CC_PROJECT_OWNER_ROLE, basetokens_cc);
-            await api.create_pa_account(issuer.address, CC_PROJECT_OWNER_ROLE, basetokens_cc);
-            await api.create_pa_account(cc_auditor.address, CC_AUDITOR_ROLE, basetokens_cc);
-            await api.create_pa_account(cc_standard.address, CC_STANDARD_ROLE, basetokens_cc);
-            await api.create_pa_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens_cc);
-            await api.create_pa_account(cc_investor.address, CC_INVESTOR_ROLE, basetokens_cc);
-            await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens_cc);
-            await api.create_account(cc_investor.address, INVESTOR_ROLE, basetokens_cc);
-            await api.create_pa_account(custodian.address, CUSTODIAN_ROLE, basetokens_cc);
+            await api.create_account(cc_project_owner.address, CC_PROJECT_OWNER_ROLE, basetokens);
+            await api.create_account(cc_auditor.address, CC_AUDITOR_ROLE, basetokens);
+            await api.create_account(cc_standard.address, CC_STANDARD_ROLE, basetokens);
+            await api.create_account(cc_registry.address, CC_REGISTRY_ROLE, basetokens);
+            await api.create_account(cc_investor.address, CC_INVESTOR_ROLE | INVESTOR_ROLE, basetokens);
 
             const now_cc = await api.now();
             console.log(`accounts for carbon credits created at ${now_cc}`);
@@ -744,7 +734,7 @@ async function main() {
         case 'scenario4':
             await scenario4.apply(api, args.slice(1));
             break;
-        case 'carbon_credits_scenario1':
+        case 'scenario_cc1':
             await carbon_credits_scenario1.apply(api, args.slice(1));
             break;
         default:
