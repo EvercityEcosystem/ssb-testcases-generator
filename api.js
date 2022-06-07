@@ -8,9 +8,6 @@ import dotenv from 'dotenv';
 import {
     readFileSync
 } from 'fs';
-import {
-  bond_emitter
-} from './init.js';
 dotenv.config();
 
 
@@ -249,10 +246,10 @@ class NodeConnection {
         return await this.api.query.evercity.bondRegistry(tbondid);
     }
 
-    async release_bond(bond_emitter, bondid) {
+    async release_bond(bond_arranger, bondid) {
         const bond = await this.get_bond(bondid);
 
-        await this.api.tx.evercity.bondRelease(bondid, bond.nonce.toNumber()).signAndSend(bond_emitter, {
+        await this.api.tx.evercity.bondRelease(bondid, bond.nonce.toNumber()).signAndSend(bond_arranger, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -273,11 +270,11 @@ class NodeConnection {
           });
     }
 
-    async activate_bond(bond_emitter, auditorid, bondid) {
+    async activate_bond(bond_arranger, auditorid, bondid) {
         // get nonce value
         const bond = await this.get_bond(bondid);
 
-        await this.api.tx.evercity.bondSetAuditor(bondid, auditorid).signAndSend(bond_emitter, {
+        await this.api.tx.evercity.bondSetAuditor(bondid, auditorid).signAndSend(bond_arranger, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {
@@ -297,7 +294,7 @@ class NodeConnection {
             }
           });
 
-        await this.api.tx.evercity.bondActivate(bondid, bond.nonce.toNumber() + 1).signAndSend(bond_emitter, {
+        await this.api.tx.evercity.bondActivate(bondid, bond.nonce.toNumber() + 1).signAndSend(bond_arranger, {
             nonce: -1
         },
         ({ status, events, dispatchError }) => {

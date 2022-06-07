@@ -1,6 +1,6 @@
 import {
     api,
-    bond_emitter,
+    bond_arranger,
     custodian,
     auditor,
     manager,
@@ -41,7 +41,7 @@ const ISSUER_ROLE = 4;
 const INVESTOR_ROLE = 8;
 const AUDITOR_ROLE = 16;
 const MANAGER_ROLE = 32;
-const BOND_EMITTER = 128;
+const BOND_ARRANGER = 128;
 
 // pallet accounts roles
 
@@ -65,7 +65,7 @@ const CC_ASSET_ID = 1;
 
 const GOLD_STANDARD = "GOLD_STANDARD";
 
-const accounts = [bond_emitter,
+const accounts = [bond_arranger,
     custodian,
     auditor,
     manager,
@@ -205,10 +205,10 @@ async function scenario1() {
     now = await api.now();
     await api.wait_until(0);
 
-    await api.release_bond(bond_emitter, BOND1);
-    await api.release_bond(bond_emitter, BOND2);
-    await api.release_bond(bond_emitter, BOND3);
-    await api.release_bond(bond_emitter, BOND4);
+    await api.release_bond(bond_arranger, BOND1);
+    await api.release_bond(bond_arranger, BOND2);
+    await api.release_bond(bond_arranger, BOND3);
+    await api.release_bond(bond_arranger, BOND4);
     console.log(`'${BOND1}' '${BOND2}' '${BOND3}' '${BOND4}' bonds released`);
 
     await api.wait_until(0);
@@ -232,9 +232,9 @@ async function scenario1() {
 
     // ACTIVATE BONDS
     await api.wait_until(0);
-    await api.activate_bond(bond_emitter, auditor.address, BOND1);
-    await api.activate_bond(bond_emitter, auditor.address, BOND2);
-    await api.activate_bond(bond_emitter, auditor.address, BOND3);
+    await api.activate_bond(bond_arranger, auditor.address, BOND1);
+    await api.activate_bond(bond_arranger, auditor.address, BOND2);
+    await api.activate_bond(bond_arranger, auditor.address, BOND3);
 
     console.log(`'${BOND1}' '${BOND2}' '${BOND3}' bonds activated`);
 
@@ -382,7 +382,7 @@ async function bond_flow(bond) {
     await api.wait_until(0);
 
 
-    await api.release_bond(bond_emitter, BOND10);
+    await api.release_bond(bond_arranger, BOND10);
     console.log(`'${BOND10}' has been released `);
     await api.wait_until(0);
 
@@ -398,7 +398,7 @@ async function bond_flow(bond) {
     console.log(`  ${investor3.meta.name} - 100 units`);
 
     await api.wait_until(0);
-    await api.activate_bond(bond_emitter, auditor.address, BOND10);
+    await api.activate_bond(bond_arranger, auditor.address, BOND10);
     console.log(`'${BOND10}' has been activated `);
     await api.wait_until(0);
 
@@ -469,7 +469,7 @@ async function stable_bond_flow(bond, bond_id) {
     await api.wait_until(0);
 
 
-    await api.release_bond(bond_emitter, bond_id);
+    await api.release_bond(bond_arranger, bond_id);
     console.log(`'${bond_id}' has been released `);
     await api.wait_until(0);
 
@@ -486,7 +486,7 @@ async function stable_bond_flow(bond, bond_id) {
     await api.wait_until(0);
 
     await api.wait_until(0);
-    await api.activate_bond(bond_emitter, auditor.address, bond_id);
+    await api.activate_bond(bond_arranger, auditor.address, bond_id);
     console.log(`'${bond_id}' has been activated `);
     await api.wait_until(0);
 
@@ -695,7 +695,7 @@ async function main() {
             const basetokens = 60000000000000;
 
             //await api.set_pa_master(accounts_master.address, basetokens);
-            await api.create_account(bond_emitter.address, BOND_EMITTER, basetokens);
+            await api.create_account(bond_arranger.address, BOND_ARRANGER, basetokens);
             await api.create_account(custodian.address, CUSTODIAN_ROLE, basetokens);
             await api.create_account(auditor.address, AUDITOR_ROLE, basetokens);
             await api.create_account(manager.address, MANAGER_ROLE, basetokens);
