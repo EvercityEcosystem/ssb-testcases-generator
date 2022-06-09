@@ -681,8 +681,8 @@ class NodeConnection {
 
     async cc_create_bond_project(owner, standard, file_id, bond_id) {
         const tstandard = this.api.createType('Standard', standard);
-        console.log("tstandard.isGoldStandardBond "+tstandard.isGoldStandardBond);
-        console.log("tstandard.isGoldStandard: "+tstandard.isGoldStandard);
+        // console.log("tstandard.isGoldStandardBond "+tstandard.isGoldStandardBond);
+        // console.log("tstandard.isGoldStandard: "+tstandard.isGoldStandard);
 
         const tfile_id = this.api.createType('Option<FileId>', file_id);
         await this.api.tx.evercityCarbonCredits.createBondProject(tstandard, tfile_id, bond_id).signAndSend(owner,
@@ -961,11 +961,10 @@ class NodeConnection {
     }
 
     // Bond-Carbon Bridge:
-    async release_bond_carbon_credits(issuer, asset_id, bond_id) {
+    async release_bond_carbon_credits(issuer, project_id, asset_id) {
         const tasset_id = this.api.createType('AssetId', asset_id);
-        const tbond_id = this.api.createType('BondId', bond_id);
 
-        return await this.api.tx.evercityCarbonCredits.releaseBondCarbonCredits(tbond_id, tasset_id).signAndSend(issuer,
+        return await this.api.tx.evercityCarbonCredits.releaseBondCarbonCredits(project_id, tasset_id).signAndSend(issuer,
             ({ status, events, dispatchError }) => {
                 // status would still be set, but in the case of error we can shortcut
                 // to just check it (so an error would indicate InBlock or Finalized)

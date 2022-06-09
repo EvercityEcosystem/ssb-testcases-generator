@@ -175,7 +175,8 @@ function get_bond_carbon_credits_included(day, price) {
             "carbon_distribution": {
                 "investors": 50_000,
                 "issuer": 50_000
-            }
+            },
+            "account_investments": null
         }
     }
 }
@@ -282,7 +283,7 @@ async function scenario4() {
     // Create file
     let pdd_file_id = get_random_16b_id();
     await api.filesign_create_file(issuer, PDD_TAG, PDD_FILEHASH, pdd_file_id);
-    console.log(pdd_file_id.toHuman());
+    // console.log(pdd_file_id);
     console.log(`${issuer.address} created file with id ${pdd_file_id}`);
     await api.wait_until(0);
 
@@ -351,16 +352,18 @@ async function scenario4() {
 
     // Release Bond Carbon credits
     const ASSET_ID = 12;
-    await api.release_bond_carbon_credits(issuer, ASSET_ID, CC_BOND_2);
+    await api.release_bond_carbon_credits(issuer, PROJECT_ID, ASSET_ID);
     await api.wait_until(0);
 
+    let issuer_asset_info = await api.get_user_asset_info(ASSET_ID, issuer.address);
     let investor1_asset_info = await api.get_user_asset_info(ASSET_ID, investor1.address);
     let investor2_asset_info = await api.get_user_asset_info(ASSET_ID, investor2.address);
     let investor3_asset_info = await api.get_user_asset_info(ASSET_ID, investor3.address);
 
-    console.log(JSON.stringify(investor1_asset_info, null, 2));
-    console.log(JSON.stringify(investor2_asset_info, null, 2));
-    console.log(JSON.stringify(investor3_asset_info, null, 2));
+    console.log("issuer: "+JSON.stringify(issuer_asset_info, null, 2));
+    console.log("investor1: "+JSON.stringify(investor1_asset_info, null, 2));
+    console.log("investor2: "+JSON.stringify(investor2_asset_info, null, 2));
+    console.log("investor3: "+JSON.stringify(investor3_asset_info, null, 2));
 }
 
 async function bond_flow(bond) {
