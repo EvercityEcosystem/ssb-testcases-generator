@@ -260,8 +260,6 @@ class NodeConnection {
 
     async cc_create_bond_project(owner, standard, file_id, bond_id) {
         const tstandard = this.api.createType('Standard', standard);
-        // console.log("tstandard.isGoldStandardBond "+tstandard.isGoldStandardBond);
-        // console.log("tstandard.isGoldStandard: "+tstandard.isGoldStandard);
 
         const tfile_id = this.api.createType('Option<FileId>', file_id);
         await this.api.tx.evercityCarbonCredits.createBondProject(tstandard, tfile_id, bond_id).signAndSend(owner,
@@ -333,12 +331,12 @@ class NodeConnection {
 
     async create_carbon_credits_lot(holder, asset_id, deadline, amount, price_per_item) {
         const tasset_id = this.api.createType('AssetId', asset_id);
-        const lot = this.api.createType('CarbonCreditsPackageLotOf', {
+        const lot = {
             target_bearer: null,
             deadline: deadline,
             amount: amount,
             price_per_item: price_per_item,
-        });
+        };
 
         await this.api.tx.evercityCarbonCredits.createCarbonCreditLot(tasset_id, lot).signAndSend(holder,
             this.errorLogFunc);
@@ -348,12 +346,12 @@ class NodeConnection {
         const tasset_id = this.api.createType('AssetId', asset_id);
         const tholder = this.api.createType('AccountId', holder);
         const tamount = this.api.createType('ABalance', amount);
-        const lot = this.api.createType('CarbonCreditsPackageLotOf', {
+        const lot = {
             target_bearer: null,
             deadline: deadline,
             amount: amount,
             price_per_item: price_per_item,
-        });
+        };
 
         await this.api.tx.evercityCarbonCredits.buyCarbonCreditLotUnits(tholder, tasset_id, lot, tamount).signAndSend(investor,
             this.errorLogFunc);

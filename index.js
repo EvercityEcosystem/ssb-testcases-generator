@@ -53,10 +53,10 @@ const CC_REGISTRY_ROLE = 4096;
 
 // Filesign const
 const PDD_TAG = "PDD TAG";
-const PDD_FILEHASH = "0101010101010101";
+const PDD_FILEHASH = "01010101010101010101010101010101";
 
 const REPORT_TAG = "REPORT TAG";
-const REPORT_FILEHASH = "1231231231231236";
+const REPORT_FILEHASH = "12312312312312361231231231231236";
 const CREDITS_COUNT = 1100;
 const CC_NAME = "TEST Carbon Credit";
 const CC_TAG= "TCC";
@@ -117,10 +117,10 @@ function get_bond(day, price) {
 
 function get_stable_bond(day, price) {
     return {
-        "docs_pack_root_hash_main": [0],
-        "docs_pack_root_hash_legal": [0],
-        "docs_pack_root_hash_finance": [0],
-        "docs_pack_root_hash_tech": [0],
+        "docs_pack_root_hash_main": '00000000000000000000000000000000',
+        "docs_pack_root_hash_legal": '00000000000000000000000000000000',
+        "docs_pack_root_hash_finance": '00000000000000000000000000000000',
+        "docs_pack_root_hash_tech": '00000000000000000000000000000000',
 
         "impact_data_type": "POWER_GENERATED",
         "impact_data_baseline": [null, null, null, null, null, null, null, null, null, null, null, null],
@@ -146,10 +146,10 @@ function get_stable_bond(day, price) {
 
 function get_bond_carbon_credits_included(day, price) {
     return {
-        "docs_pack_root_hash_main": [0],
-        "docs_pack_root_hash_legal": [0],
-        "docs_pack_root_hash_finance": [0],
-        "docs_pack_root_hash_tech": [0],
+        "docs_pack_root_hash_main": '00000000000000000000000000000000',
+        "docs_pack_root_hash_legal": '00000000000000000000000000000000',
+        "docs_pack_root_hash_finance": '00000000000000000000000000000000',
+        "docs_pack_root_hash_tech": '00000000000000000000000000000000',
 
         "impact_data_type": "POWER_GENERATED",
         "impact_data_baseline": [null, null, null, null, null, null, null, null, null, null, null, null],
@@ -259,7 +259,7 @@ async function scenario1() {
     console.log(`${investor3.meta.name} bought 50 bond units`);
     
     let bond_in_chain = await api.get_bond(BOND1);
-    console.log(JSON.stringify(bond_in_chain, null, 2));
+    console.log(bond_in_chain.toHuman());
 }
 
 async function scenario2() {
@@ -360,10 +360,10 @@ async function scenario4() {
     let investor2_asset_info = await api.get_user_asset_info(ASSET_ID, investor2.address);
     let investor3_asset_info = await api.get_user_asset_info(ASSET_ID, investor3.address);
 
-    console.log("issuer: "+JSON.stringify(issuer_asset_info, null, 2));
-    console.log("investor1: "+JSON.stringify(investor1_asset_info, null, 2));
-    console.log("investor2: "+JSON.stringify(investor2_asset_info, null, 2));
-    console.log("investor3: "+JSON.stringify(investor3_asset_info, null, 2));
+    console.log("issuer has "+issuer_asset_info.balance.toHuman()+" carbon assets.");
+    console.log("investor1 has "+investor1_asset_info.balance.toHuman()+" carbon assets.");
+    console.log("investor2 has "+investor2_asset_info.balance.toHuman()+" carbon assets.");
+    console.log("investor3 has "+investor3_asset_info.balance.toHuman()+" carbon assets.");
 }
 
 async function bond_flow(bond) {
@@ -390,7 +390,7 @@ async function bond_flow(bond) {
     await api.wait_until(0);
 
     let bond_in_chain = await api.get_bond(BOND10);
-    console.log(JSON.stringify(bond_in_chain, null, 2));
+    console.log(bond_in_chain.toHuman());
 
     await api.buy_bond_units(investor1, BOND10, 10);
     await api.buy_bond_units(investor2, BOND10, 50);
@@ -447,7 +447,7 @@ async function bond_flow(bond) {
 
     console.log(`withdraw bond '${BOND10}' by all investors`);
     bond_in_chain = await api.get_bond(BOND10);
-    console.log(JSON.stringify(bond_in_chain, null, 2));
+    console.log(bond_in_chain.toHuman());
 
     await api.wait_until(0);
 }
@@ -477,7 +477,7 @@ async function stable_bond_flow(bond, bond_id) {
     await api.wait_until(0);
 
     let bond_in_chain = await api.get_bond(bond_id);
-    console.log(JSON.stringify(bond_in_chain, null, 2));
+    console.log(bond_in_chain.toHuman());
 
     let u1 = await api.buy_bond_units(investor1, bond_id, 10);
     let u2 = await api.buy_bond_units(investor2, bond_id, 50);
@@ -494,9 +494,8 @@ async function stable_bond_flow(bond, bond_id) {
     await api.wait_until(0);
 
     bond_in_chain = await api.get_bond(bond_id);
-    //console.log( JSON.stringify(bond_in_chain, null, 2) );
 
-    const bond_activation_time = bond_in_chain.active_start_date.toNumber();
+    const bond_activation_time = bond_in_chain.activeStartDate.toNumber();
     console.log(`bond activated at ${bond_activation_time}`);
 
     await api.wait_until(0);
@@ -530,7 +529,7 @@ async function stable_bond_flow(bond, bond_id) {
 
     console.log(`withdraw bond '${bond_id}' by all investors`);
     bond_in_chain = await api.get_bond(bond_id);
-    console.log(JSON.stringify(bond_in_chain, null, 2));
+    console.log(bond_in_chain.toHuman());
 
     await api.wait_until(0);
 }
@@ -591,16 +590,16 @@ async function carbon_credits_scenario1() {
     // Project Owner submits PDD (changing status to Registration) => 
     // => Auditor Approves PDD => Standard Certifies PDD => Registry Registers PDD (changing status to Issuance)
     await api.cc_sign_project(cc_project_owner, PROJECT_ID);
-    console.log(`owner ${cc_project_owner.address} signed the project with id ${PROJECT_ID}`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} signed the project with id ${PROJECT_ID}`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_auditor, PROJECT_ID);
-    console.log(`auditor ${cc_auditor.address} signed the project with id ${PROJECT_ID}`);
+    console.log(`${cc_auditor.meta.name} ${cc_auditor.address} signed the project with id ${PROJECT_ID}`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_standard, PROJECT_ID);
-    console.log(`standard ${cc_standard.address} signed the project with id ${PROJECT_ID}`);
+    console.log(`${cc_standard.meta.name} ${cc_standard.address} signed the project with id ${PROJECT_ID}`);
     await api.wait_until(0);
     await api.cc_sign_project(cc_registry, PROJECT_ID);
-    console.log(`registry ${cc_registry.address} signed the project with id ${PROJECT_ID}`);
+    console.log(`${cc_registry.meta.name} ${cc_registry.address} signed the project with id ${PROJECT_ID}`);
     await api.wait_until(0);
 
     // Add report
@@ -627,33 +626,33 @@ async function carbon_credits_scenario1() {
     // Project Owner sends report for verification =>  Auditor provides and submits verification report => 
     // Standard Approves carbon credit issuance => Registry issues carbon credits
     await api.cc_sign_last_report(cc_project_owner, PROJECT_ID);
-    console.log(`owner ${cc_project_owner.address} signed the project ${PROJECT_ID} last annual report`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} signed the project ${PROJECT_ID} last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_auditor, PROJECT_ID);
-    console.log(`auditor ${cc_auditor.address} signed the project ${PROJECT_ID} last annual report`);
+    console.log(`${cc_auditor.meta.name} ${cc_auditor.address} signed the project ${PROJECT_ID} last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_standard, PROJECT_ID);
-    console.log(`standard ${cc_standard.address} signed the project ${PROJECT_ID} last annual report`);
+    console.log(`${cc_standard.meta.name} ${cc_standard.address} signed the project ${PROJECT_ID} last annual report`);
     await api.wait_until(0);
     await api.cc_sign_last_report(cc_registry, PROJECT_ID);
-    console.log(`registry ${cc_registry.address} signed the project ${PROJECT_ID} last annual report`);
+    console.log(`${cc_registry.meta.name} ${cc_registry.address} signed the project ${PROJECT_ID} last annual report`);
     await api.wait_until(0);
 
     // Release Carbon credits and burn some
     await api.cc_release_carbon_credits(cc_project_owner, PROJECT_ID, CC_ASSET_ID, cc_project_owner.address, 1);
-    console.log(`${cc_project_owner.address} released project ${PROJECT_ID} last annual report carbon credits`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} released project ${PROJECT_ID} last annual report carbon credits`);
     await api.wait_until(0);
     let owner_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_project_owner.address);
-    console.log(`${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
     await api.burn_carbon_credits(cc_project_owner, CC_ASSET_ID, 50);
-    console.log(`${cc_project_owner.address} burned 50 asset ${CC_ASSET_ID} carbon credits`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} burned 50 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
 
     // // Transfer Carbon credits
     // Create Carbon credits lot
     let deadline = new Date().getTime() + 2_592_000;
     await api.create_carbon_credits_lot(cc_project_owner, CC_ASSET_ID, deadline, 50, 10);
-    console.log(`${cc_project_owner.address} created lot with 50 carbon credits`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} created lot with 50 carbon credits`);
     await api.wait_until(0);
     // Buy Carbon credits lot
     const everusd = 2000;
@@ -661,23 +660,23 @@ async function carbon_credits_scenario1() {
     console.log(`cc_investor has minted ${everusd} everusd`);
     await api.wait_until(0);
     await api.buy_carbon_credits_lot(cc_investor, cc_project_owner.address, CC_ASSET_ID, deadline, 50, 10);
-    console.log(`${cc_investor.address} bought lot with 50 carbon credits`);
+    console.log(`${cc_investor.meta.name} ${cc_investor.address} bought lot with 50 carbon credits`);
     await api.wait_until(0);
     let investor_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_investor.address);
-    console.log(`${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
+    console.log(`${cc_investor.meta.name} ${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
 
     // Burn Carbon credits
     await api.burn_carbon_credits(cc_investor, CC_ASSET_ID, 30);
-    console.log(`${cc_investor.address} burned 30 asset ${CC_ASSET_ID} carbon credits`);
+    console.log(`${cc_investor.meta.name} ${cc_investor.address} burned 30 asset ${CC_ASSET_ID} carbon credits`);
     await api.wait_until(0);
 
     owner_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_project_owner.address);
     investor_asset_info = await api.get_user_asset_info(CC_ASSET_ID, cc_investor.address);
 
-    console.log(`${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
-    console.log(`${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
+    console.log(`${cc_project_owner.meta.name} ${cc_project_owner.address} now has ${owner_asset_info.balance} carbon credits`);
+    console.log(`${cc_investor.meta.name} ${cc_investor.address} now has ${investor_asset_info.balance} carbon credits`);
 
-    console.log(`Scenario1 has been completed successfully!`);
+    console.log(`Carbon credits scenario1 has been completed successfully!`);
 }
 
 function get_random_16b_id() {
