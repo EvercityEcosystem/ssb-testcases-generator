@@ -21,17 +21,17 @@ const BLOCK_INTERVAL = 6000;
 // everusd to account balance translation 
 const UNIT = 1000000000;
 // scenario1 bonds
-const BOND1 = "ECBD101";
-const BOND2 = "ECBD102";
-const BOND3 = "ECBD103";
-const BOND4 = "ECBD104";
-const BOND5 = "ECBD105";
+const BOND1 = "ECBD101000000000";
+const BOND2 = "ECBD102000000000";
+const BOND3 = "ECBD103000000000";
+const BOND4 = "ECBD104000000000";
+const BOND5 = "ECBD105000000000";
 // scenario2 bond
 // const BOND10 = "ECBDSC8";
 const BOND10 = "1111111111111111";
 const BOND22 = "2222222222222222";
-const CC_BOND_1 = "CCBOND1";
-const CC_BOND_2 = "CCBOND2";
+const CC_BOND_1 = "CCBOND1000000000";
+const CC_BOND_2 = "CCBOND2000000000";
 
 
 // account roles
@@ -88,10 +88,10 @@ for (let account of accounts) {
 
 function get_bond(day, price) {
     return {
-        "docs_pack_root_hash_main": [0],
-        "docs_pack_root_hash_legal": [0],
-        "docs_pack_root_hash_finance": [0],
-        "docs_pack_root_hash_tech": [0],
+        "docs_pack_root_hash_main": '00000000000000000000000000000000',
+        "docs_pack_root_hash_legal": '00000000000000000000000000000000',
+        "docs_pack_root_hash_finance": '00000000000000000000000000000000',
+        "docs_pack_root_hash_tech": '00000000000000000000000000000000',
 
         "impact_data_type": "POWER_GENERATED",
         "impact_data_baseline": [4000, 5000, 5000, 6000, 6000, 6000, 6000, 6000, 6000, 7000, 8000, 8000],
@@ -406,9 +406,9 @@ async function bond_flow(bond) {
     await api.wait_until(0);
 
     bond_in_chain = await api.get_bond(BOND10);
-    //console.log( JSON.stringify(bond_in_chain, null, 2) );
+    console.log(bond_in_chain.toHuman() );
 
-    const bond_activation_time = bond_in_chain.active_start_date.toNumber();
+    const bond_activation_time = bond_in_chain.activeStartDate.toNumber();
     console.log(`bond activated at ${bond_activation_time}`);
 
     await api.wait_until(0);

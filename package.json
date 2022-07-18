@@ -21,7 +21,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@polkadot/api": "^3.0.2-3",
+    "@polkadot/api": "^v8.13.0",
     "dotenv": "^8.2.0"
   }
 }
