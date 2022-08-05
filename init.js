@@ -8,7 +8,7 @@ const keyring = new Keyring({
     type: 'sr25519'
 });
 
-//replace with keyring.addFromUri("//Alice") if use with IPCI chain
+//replace with keyring.addFromUri("bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice") if use with IPCI chain
 export const bond_arranger = keyring.addFromUri('gallery suffer express depend kite math rich exclude vanish minor risk auction', {
     name: 'bond_arranger'
 });
